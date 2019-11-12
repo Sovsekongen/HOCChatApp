@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity
     private CallbackManager callbackManager;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private Intent chatroomIntent;
+    private Intent chatRoomIntent;
 
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "ChatApp - login activity";
@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
         Log.e(TAG, "Launched Login Fragment");
 
-        chatroomIntent = new Intent(this, ChatRoomActivity.class);
+        chatRoomIntent = new Intent(this, ChatRoomActivity.class);
         mAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
 
@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity
     {
         if(mAuth.getCurrentUser() != null)
         {
-            startActivity(chatroomIntent);
+            startActivity(chatRoomIntent);
         }
     }
 
@@ -136,7 +136,6 @@ public class LoginActivity extends AppCompatActivity
             public void onSuccess(LoginResult loginResult)
             {
                 Log.e(TAG, "Successfully logged in.");
-                //getGraphData(loginResult.getAccessToken());
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
@@ -166,13 +165,11 @@ public class LoginActivity extends AppCompatActivity
         {
             if (task.isSuccessful())
             {
-                // Sign in success, update UI with the signed-in user's information
                 Log.e(TAG, "signInWithCredential:success");
-                startActivity(chatroomIntent);
+                startActivity(chatRoomIntent);
             }
             else
             {
-                // If sign in fails, display a message to the user.
                 Log.e(TAG, "signInWithCredential:failure", task.getException());
                 Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
             }
@@ -184,17 +181,16 @@ public class LoginActivity extends AppCompatActivity
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, task ->
+                {
                     if (task.isSuccessful())
                     {
                         Log.d(TAG, "signInWithCredential:success");
-                        startActivity(chatroomIntent);
+                        startActivity(chatRoomIntent);
                     }
                     else
                     {
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
-
                     }
                 });
     }
@@ -204,25 +200,4 @@ public class LoginActivity extends AppCompatActivity
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-
-    /*
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN)
-        {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try
-            {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            }
-            catch (ApiException e)
-            {
-                Log.w(TAG, "Google sign in failed", e);
-            }
-        }
-    }*/
 }

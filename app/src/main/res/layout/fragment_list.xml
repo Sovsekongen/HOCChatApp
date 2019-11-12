@@ -6,21 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chatroomView"
+        android:id="@+id/chatroom_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    -->
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="176dp"
-        android:layout_marginTop="281dp"
-        android:text="FragmentList"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

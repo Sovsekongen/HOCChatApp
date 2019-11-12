@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.ui.fragments.ChatRoomFragment;
+import p.vikpo.chatapp.ui.fragments.ListFragment;
 
 public class ChatRoomActivity extends AppCompatActivity
 {
@@ -24,7 +24,7 @@ public class ChatRoomActivity extends AppCompatActivity
         Log.e(TAG, "Launched Chatroom Activity");
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.ChatRoomFragmentContainer, ChatRoomFragment.newInstance());
+        fragmentTransaction.add(R.id.ChatRoomFragmentContainer, ListFragment.newInstance());
         fragmentTransaction.commit();
     }
 
