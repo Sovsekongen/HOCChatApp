@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/MainActivityLayout"
+    android:id="@+id/ChatroomLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.MainActivity" >
+    android:orientation="vertical">
 
     <FrameLayout
-        android:id="@+id/MainFragmentContainer"
+        android:id="@+id/ChatRoomFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
@@ -17,4 +17,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
     </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
