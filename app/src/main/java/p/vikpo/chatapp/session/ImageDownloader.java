@@ -11,8 +11,6 @@ import java.net.URL;
 
 public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
 {
-    private static final String URL_PROFILE_PICTURE = "https://graph.facebook.com/";
-    private static final String URL_PICTURE_TYPE = "/picture?type=small";
 
     public interface AsyncResponse
     {
@@ -35,7 +33,7 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
     @Override
     protected Bitmap doInBackground(String... URL)
     {
-        String imageURL = URL_PROFILE_PICTURE + URL[0] + URL_PICTURE_TYPE;
+        String imageURL = URL[0];
 
         Bitmap bitmap = null;
         try

@@ -13,7 +13,8 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
+            android:value="@string/facebook_app_id"
+            tools:replace="android:value"/>
         <meta-data android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
             android:value="false"/>
 
@@ -41,9 +42,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activities.ChatRoomActivity" android:theme="@style/AppTheme.Dark">
-
-        </activity>
+        <activity android:name=".ui.activities.LoginActivity" android:theme="@style/AppTheme.Dark"/>
+        <activity android:name=".ui.activities.ChatRoomActivity" android:theme="@style/AppTheme.Dark"/>
+        <activity android:name=".ui.activities.GoogleLoginActivity" android:theme="@style/AppTheme.Dark"/>
 
     </application>
 

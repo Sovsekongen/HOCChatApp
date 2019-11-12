@@ -1,6 +1,5 @@
 package p.vikpo.chatapp.ui.fragments;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,20 +11,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.StorageReference;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.comms.login.LoginViewModel;
 import p.vikpo.chatapp.session.ImageDownloader;
-import p.vikpo.chatapp.session.User;
 
-public class ChatRoomFragment extends Fragment implements LoginViewModel.FBLoginCallback
+public class ChatRoomFragment extends Fragment
 {
+    private static final String TAG = "ChatApp - Chatroom Fragment";
     private TextView email;
     private ImageView avatar;
-    private User currentUser;
-    private LoginViewModel loginViewModel;
 
     public static ChatRoomFragment newInstance()
     {
@@ -60,12 +60,12 @@ public class ChatRoomFragment extends Fragment implements LoginViewModel.FBLogin
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View v = inflater.inflate(R.layout.fragment_chat_room, container, false);
-        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        Log.e(TAG, "ChatRoomFragment View Created");
 
-        Log.e("ChatApp", "ChatRoomFragment View Created");
+        email = v.findViewById(R.id.eMail);
+        avatar = v.findViewById(R.id.avatar);
 
-        email = (TextView) v.findViewById(R.id.eMail);
-        avatar = (ImageView) v.findViewById(R.id.avatar);
+        loadCurrentUser(FirebaseAuth.getInstance().getCurrentUser());
 
         return v;
     }
@@ -76,18 +76,14 @@ public class ChatRoomFragment extends Fragment implements LoginViewModel.FBLogin
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void loadCurrentUser(User user)
+    private void loadCurrentUser(FirebaseUser user)
     {
-        if(currentUser != null)
+        if(user != null)
         {
-            email.setText(user.getEmail());
-            avatar.setImageBitmap(user.getAvatar());
-        }
-    }
+            email.setText(user.getDisplayName());
 
-    @Override
-    public void onFbLogin(LiveData<User> currentUser)
-    {
-        loadCurrentUser(currentUser.getValue());
+            ImageDownloader imageDownload = new ImageDownloader(output -> avatar.setImageBitmap(output));
+            imageDownload.execute(user.getPhotoUrl().toString());
+        }
     }
 }

@@ -1,5 +1,6 @@
 package p.vikpo.chatapp.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import p.vikpo.chatapp.R;
+import p.vikpo.chatapp.ui.activities.LoginActivity;
 
 public class SplashFragment extends Fragment
 {
@@ -55,16 +57,10 @@ public class SplashFragment extends Fragment
         View v = inflater.inflate(R.layout.fragment_splash, container, false);
         Log.e("ChatApp", "Created Splash View");
 
-        final FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-
-        delayHandler.postDelayed(new Runnable()
+        delayHandler.postDelayed(() ->
         {
-            @Override
-            public void run()
-            {
-                fragmentTransaction.replace(R.id.MainFragmentContainer, LoginFragment.newInstance());
-                fragmentTransaction.commit();
-            }
+            final Intent launchLogin = new Intent(getContext(), LoginActivity.class);
+            startActivity(launchLogin);
         }, 1000);
 
         return v;

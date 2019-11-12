@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "862381386914",
+    "firebase_url": "https://hocchatapp.firebaseio.com",
+    "project_id": "hocchatapp",
+    "storage_bucket": "hocchatapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:862381386914:android:5f92dc1668c19892403bfb",
+        "android_client_info": {
+          "package_name": "p.vikpo.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "862381386914-lcsh7n0st0o9228e029578nbnin3meke.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtse1_4D6Gn2E6FzaZrst5hLq2JYYHYoA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "862381386914-nr32nli4p5sh4jcu7cesm4lra1ie59n8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
