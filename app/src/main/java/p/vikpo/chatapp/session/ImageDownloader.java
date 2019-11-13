@@ -11,7 +11,6 @@ import java.net.URL;
 
 public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
 {
-
     public interface AsyncResponse
     {
         void ProcessFinish(Bitmap result);

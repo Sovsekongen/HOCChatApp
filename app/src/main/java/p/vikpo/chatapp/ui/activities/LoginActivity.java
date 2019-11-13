@@ -1,5 +1,7 @@
 package p.vikpo.chatapp.ui.activities;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +37,7 @@ public class LoginActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private Intent chatRoomIntent;
+    private ProgressDialog pd;
 
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "ChatApp - login activity";
@@ -48,6 +51,15 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
         Log.e(TAG, "Launched Login Fragment");
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .requestProfile()
+                .build();
+
+        pd = new ProgressDialog(this);
+        pd.setMessage("Logging in");
+
         chatRoomIntent = new Intent(this, ChatRoomActivity.class);
         mAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
@@ -55,12 +67,6 @@ public class LoginActivity extends AppCompatActivity
         LoginButton fbLoginButton = findViewById(R.id.fb_login_button);
         fbLoginButton.setPermissions(Arrays.asList(EMAIL, PUBLIC_PROFILE));
         fbLoginButton.registerCallback(callbackManager, getFacebookCallback());
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .requestProfile()
-                .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
@@ -75,29 +81,15 @@ public class LoginActivity extends AppCompatActivity
         isUserLoggedIn();
     }
 
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy()
-    {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-    }
-
     private void isUserLoggedIn()
     {
         if(mAuth.getCurrentUser() != null)
         {
             startActivity(chatRoomIntent);
+        }
+        else
+        {
+            Log.e(TAG, "User is not logged in");
         }
     }
 
@@ -159,6 +151,7 @@ public class LoginActivity extends AppCompatActivity
     private void handleFacebookAccessToken(AccessToken token)
     {
         Log.e(TAG, "handleFacebookAccessToken:" + token);
+        pd.show();
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task ->
@@ -166,11 +159,13 @@ public class LoginActivity extends AppCompatActivity
             if (task.isSuccessful())
             {
                 Log.e(TAG, "signInWithCredential:success");
+                pd.dismiss();
                 startActivity(chatRoomIntent);
             }
             else
             {
                 Log.e(TAG, "signInWithCredential:failure", task.getException());
+                pd.dismiss();
                 Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -180,19 +175,21 @@ public class LoginActivity extends AppCompatActivity
     {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
+        pd.show();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task ->
-                {
-                    if (task.isSuccessful())
-                    {
-                        Log.d(TAG, "signInWithCredential:success");
-                        startActivity(chatRoomIntent);
-                    }
-                    else
-                    {
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-                    }
-                });
+        {
+            if (task.isSuccessful())
+            {
+                Log.d(TAG, "signInWithCredential:success");
+                pd.dismiss();
+                startActivity(chatRoomIntent);
+            }
+            else
+            {
+                Log.w(TAG, "signInWithCredential:failure", task.getException());
+            }
+        });
     }
 
     private void signIn()

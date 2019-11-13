@@ -1,47 +1,75 @@
 package p.vikpo.chatapp.comms.chatroom;
 
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 
-import p.vikpo.chatapp.R;
+import java.util.Date;
 
-public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomWrapper>
+import p.vikpo.chatapp.session.ImageDownloader;
+import p.vikpo.chatapp.session.message.MessageWrapper;
+
+public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, ChatroomViewHolder>
 {
-    private List<String> data;
+    private String userId;
+    private final int MESSAGE_IN_VIEW_TYPE  = 1;
+    private final int MESSAGE_OUT_VIEW_TYPE = 2;
+    private final String TAG = "ChatApp - Chatroom Adapter";
 
-    public ChatroomAdapter(List<String> data)
+    public ChatroomAdapter(Query query, String userId)
     {
-        this.data = data;
+        super(new FirestoreRecyclerOptions
+                .Builder<MessageWrapper>()
+                .setQuery(query, MessageWrapper.class)
+                .build());
+        Log.e(TAG, userId);
+        this.userId = userId;
     }
 
     @NonNull
     @Override
-    public ChatroomWrapper onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public ChatroomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        ChatroomListView chatroomListView = new ChatroomListView(parent.getContext());
-        chatroomListView.setLayoutParams(new ViewGroup.LayoutParams(
+        ChatroomLayout chatroomLayout = new ChatroomLayout(parent.getContext(), viewType);
+        chatroomLayout.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        return new ChatroomWrapper(chatroomListView);
+        return new ChatroomViewHolder(chatroomLayout);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatroomWrapper holder, int position)
+    protected void onBindViewHolder(@NonNull ChatroomViewHolder holder, int position, @NonNull MessageWrapper model)
     {
-        holder.itemView.setTitle(data.get(position));
+        holder.bind(model.getMessageUser(),
+                new Date(model.getMessageTimer()).toString(),
+                model.getMessageText());
+
+        ImageDownloader imageDownloader = new ImageDownloader(holder::bindAvatar);
+        imageDownloader.execute(model.getMessageAvatarUrl());
     }
 
     @Override
-    public int getItemCount()
+    public int getItemViewType(int position)
     {
-        return data.size();
+        Log.e(TAG, getItem(position).getMessageUserId() + " " + userId);
+        if(getItem(position).getMessageUserId().equals(userId))
+        {
+            return MESSAGE_OUT_VIEW_TYPE;
+        }
+
+        return MESSAGE_IN_VIEW_TYPE;
     }
 
+    @Override
+    public void onError(FirebaseFirestoreException e)
+    {
+        Log.e(TAG, "Encountered Error", e);
+    }
 }

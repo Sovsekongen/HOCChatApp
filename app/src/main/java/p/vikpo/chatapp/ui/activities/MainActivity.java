@@ -8,23 +8,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.ui.fragments.SplashFragment;
 
 public class MainActivity extends FragmentActivity
 {
-    private static final String TAG = "Chatapp MainActivity";
+    private static final String TAG = "ChatApp MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         FirebaseApp.initializeApp(this);
         FirebaseAuth.getInstance().signOut();
+        LoginManager.getInstance().logOut();
 
         Log.e(TAG, "Launched Main Activity");
 
