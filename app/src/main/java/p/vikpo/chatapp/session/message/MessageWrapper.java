@@ -1,5 +1,9 @@
 package p.vikpo.chatapp.session.message;
 
+
+/**
+ * Wrapper for messages shown in the chat.
+ */
 public class MessageWrapper
 {
     private String messageUser, messageText, messageUserId, messageAvatarUrl;
@@ -10,6 +14,14 @@ public class MessageWrapper
 
     }
 
+    /**
+     * Constructor setting the useable parameters for displaying a message.
+     * @param messageUser the name of the message owner
+     * @param messageText the text of the message
+     * @param messageUserId the userID for identifying the owner
+     * @param messageTimer the UNIX time of the message
+     * @param messageAvatarUrl the URL for downloading the avatar
+     */
     public MessageWrapper(String messageUser, String messageText, String messageUserId, long messageTimer, String messageAvatarUrl)
     {
         this.messageUser = messageUser;

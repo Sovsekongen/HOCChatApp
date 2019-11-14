@@ -9,8 +9,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * Image downloader class for downloading the avatar-images of each user. These should later be stored
+ * smarter, perhaps as a ViewModel so each user shouldnt be downloaded each time.
+ * Works as an AyncTask with the URL as a input and the Bitmap downloaded as the output.
+ */
 public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
 {
+    /**
+     * Interface for accessing the bitmap when the AsyncTask has finished.
+     */
     public interface AsyncResponse
     {
         void ProcessFinish(Bitmap result);
@@ -18,17 +26,17 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
 
     private AsyncResponse delegate;
 
+
     public ImageDownloader(AsyncResponse delegate)
     {
         this.delegate = delegate;
     }
 
-    @Override
-    protected void onPreExecute()
-    {
-        super.onPreExecute();
-    }
-
+    /**
+     * Function for handling the download operation in the background.
+     * @param URL the url to be downloaded
+     * @return the Bitmap downloaded from the URL.
+     */
     @Override
     protected Bitmap doInBackground(String... URL)
     {
@@ -50,6 +58,11 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
         return bitmap;
     }
 
+    /**
+     * When the download operation is finished this function is passing the Bitmap to the interface
+     * for further usage.
+     * @param result the downloaded Bitmap.
+     */
     @Override
     protected void onPostExecute(Bitmap result)
     {

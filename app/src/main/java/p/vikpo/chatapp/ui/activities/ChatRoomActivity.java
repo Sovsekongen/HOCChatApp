@@ -9,8 +9,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.ui.fragments.ListFragment;
+import p.vikpo.chatapp.ui.fragments.ChatroomListFragment;
 
+/**
+ * This class handles the ChatroomActivity and contains an UI-container for fragments,
+ * namely the ChatroomListFragment and the ChatroomFragment.
+ */
 public class ChatRoomActivity extends AppCompatActivity
 {
     private static final String TAG = "ChatApp - Chatroom Activity";
@@ -24,15 +28,17 @@ public class ChatRoomActivity extends AppCompatActivity
         Log.e(TAG, "Launched Chatroom Activity");
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.ChatRoomFragmentContainer, ListFragment.newInstance());
+        fragmentTransaction.add(R.id.ChatRoomFragmentContainer, ChatroomListFragment.newInstance());
         fragmentTransaction.commit();
     }
 
+
+    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
         Fragment fragment = getFragmentManager().findFragmentById(R.id.ChatRoomFragmentContainer);
         fragment.onActivityResult(requestCode, resultCode, data);
-    }
+    }*/
 }

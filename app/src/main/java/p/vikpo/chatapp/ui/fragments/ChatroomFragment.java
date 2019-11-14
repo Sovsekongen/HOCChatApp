@@ -27,7 +27,10 @@ import p.vikpo.chatapp.comms.chatroom.ChatroomAdapter;
 import p.vikpo.chatapp.comms.chatroom.ChatroomViewHolder;
 import p.vikpo.chatapp.session.message.MessageWrapper;
 
-public class ChatRoomFragment extends Fragment
+/**
+ * Fragment for containing each individual fragment - currently only supports a single chatroom.
+ */
+public class ChatroomFragment extends Fragment
 {
     private static final String TAG = "ChatApp - Chatroom Fragment";
     private EditText inputBox;
@@ -39,17 +42,9 @@ public class ChatRoomFragment extends Fragment
     private FirestoreRecyclerAdapter<MessageWrapper, ChatroomViewHolder> adapter;
     private Query query;
 
-    public static ChatRoomFragment newInstance()
+    static ChatroomFragment newInstance()
     {
-        return new ChatRoomFragment();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstance)
-    {
-        super.onCreate(savedInstance);
-
-
+        return new ChatroomFragment();
     }
 
     @Override
@@ -58,6 +53,21 @@ public class ChatRoomFragment extends Fragment
         View v = inflater.inflate(R.layout.fragment_chat_room, container, false);
         Log.e(TAG, "View Created");
 
+        /*
+         * Initialize the UI and the recycler based on a specific document - currently only supports on document
+         */
+        initUI(v);
+        initRecycler("messages");
+
+        return v;
+    }
+
+    /**
+     * Initializes the UI elements based on the view and starts the firebase authentication.
+     * @param v the view that contains the initialize able elements.
+     */
+    private void initUI(View v)
+    {
         recyclerView = v.findViewById(R.id.chatroom_recycler);
         inputBox = v.findViewById(R.id.chatroom_inputbox);
         sendButton = v.findViewById(R.id.chatroom_message_fab);
@@ -70,8 +80,16 @@ public class ChatRoomFragment extends Fragment
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         mDatabase = FirebaseFirestore.getInstance();
+    }
 
-        query = mDatabase.collection("messages").orderBy("messageTimer").limit(50);
+    /**
+     * Inits the recycler adapter and based on a query.
+     * The query queries the firebase DB for information based on a specific given document.
+     * @param document the document being quiried by the query.
+     */
+    private void initRecycler(String document)
+    {
+        query = mDatabase.collection(document).orderBy("messageTimer").limit(50);
         query.addSnapshotListener((queryDocumentSnapshots, e) ->
         {
             if(e != null)
@@ -83,23 +101,11 @@ public class ChatRoomFragment extends Fragment
             {
                 Log.e(TAG, "Updated query");
             }
-            else
-            {
-                Log.e(TAG, "Something went wrong...");
-                Log.e(TAG, queryDocumentSnapshots.getDocuments().toString());
-            }
         });
 
         adapter = new ChatroomAdapter(query, mUser.getUid());
 
         recyclerView.setAdapter(adapter);
-
-        return v;
-    }
-
-    private void initUI()
-    {
-
     }
 
     @Override
@@ -108,6 +114,10 @@ public class ChatRoomFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
     }
 
+    /**
+     * Handles on click for the send button. If the input is empty prompt the user with a "is empty"-toast
+     * If it isn't empty send a message to the firebase database.
+     */
     private View.OnClickListener sendButtonOnClick = new View.OnClickListener()
     {
         @Override
@@ -133,16 +143,22 @@ public class ChatRoomFragment extends Fragment
     };
 
     @Override
-    public void onStart() {
+    public void onStart()
+    {
         super.onStart();
-        if(adapter!=null)
+        if(adapter != null)
+        {
             adapter.startListening();
+        }
     }
 
     @Override
-    public void onStop() {
+    public void onStop()
+    {
         super.onStop();
-        if(adapter!=null)
+        if(adapter != null)
+        {
             adapter.stopListening();
+        }
     }
 }

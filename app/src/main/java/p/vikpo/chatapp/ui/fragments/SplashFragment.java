@@ -16,6 +16,9 @@ import androidx.fragment.app.FragmentTransaction;
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.ui.activities.LoginActivity;
 
+/**
+ * Kind of a filler so far - needs to have actual splash art implemented.
+ */
 public class SplashFragment extends Fragment
 {
     private final Handler delayHandler = new Handler();

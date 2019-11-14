@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.AccessToken;
@@ -31,6 +32,9 @@ import java.util.Arrays;
 
 import p.vikpo.chatapp.R;
 
+/**
+ * This class handles the login operations from Google and Facebook provided from Firebase.
+ */
 public class LoginActivity extends AppCompatActivity
 {
     private CallbackManager callbackManager;
@@ -51,27 +55,14 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
         Log.e(TAG, "Launched Login Fragment");
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .requestProfile()
-                .build();
-
         pd = new ProgressDialog(this);
         pd.setMessage("Logging in");
-
         chatRoomIntent = new Intent(this, ChatRoomActivity.class);
+
         mAuth = FirebaseAuth.getInstance();
-        callbackManager = CallbackManager.Factory.create();
 
-        LoginButton fbLoginButton = findViewById(R.id.fb_login_button);
-        fbLoginButton.setPermissions(Arrays.asList(EMAIL, PUBLIC_PROFILE));
-        fbLoginButton.registerCallback(callbackManager, getFacebookCallback());
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        SignInButton googleSignInButton = findViewById(R.id.google_login_button);
-        googleSignInButton.setOnClickListener(v -> signIn());
+        initGoogleLogin();
+        initFacebookLogin();
     }
 
     @Override
@@ -79,18 +70,6 @@ public class LoginActivity extends AppCompatActivity
     {
         super.onStart();
         isUserLoggedIn();
-    }
-
-    private void isUserLoggedIn()
-    {
-        if(mAuth.getCurrentUser() != null)
-        {
-            startActivity(chatRoomIntent);
-        }
-        else
-        {
-            Log.e(TAG, "User is not logged in");
-        }
     }
 
     @Override
@@ -104,7 +83,10 @@ public class LoginActivity extends AppCompatActivity
             try
             {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
+                if(account != null)
+                {
+                    firebaseAuthWithGoogle(account);
+                }
             }
             catch (ApiException e)
             {
@@ -117,40 +99,108 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Initiates the required Google elements for logging in with the google servers.
+     */
+    private void initGoogleLogin()
+    {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .requestProfile()
+                .build();
+
+        //Opens the client with the earlier initiated sing in options.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        //Registers the google sing in button and adds the onClickListener
+        SignInButton googleSignInButton = findViewById(R.id.google_login_button);
+        googleSignInButton.setOnClickListener(v -> signIn());
+    }
+
+    /**
+     * Initiates the facebook login callback manager and sets the callback for the facebook login button
+     */
+    private void initFacebookLogin()
+    {
+        callbackManager = CallbackManager.Factory.create();
+
+        LoginButton fbLoginButton = findViewById(R.id.fb_login_button);
+        fbLoginButton.setPermissions(Arrays.asList(EMAIL, PUBLIC_PROFILE));
+        fbLoginButton.registerCallback(callbackManager, getFacebookCallback());
+    }
+
+    /**
+     * Check to see if the user is logged in - if the user is logged in, start the chatroom activity.
+     * If the user isn't logged in continue.
+     */
+    private void isUserLoggedIn()
+    {
+        if(mAuth.getCurrentUser() != null)
+        {
+            startActivity(chatRoomIntent);
+        }
+        else
+        {
+            Log.e(TAG, "User is not logged in");
+        }
+    }
+
+    /**
+     * onClickFunction for the google button.
+     * Starts an signIn intent provided by the google signInClient.
+     */
+    private void signIn()
+    {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    /**
+     * Registers the facebook login callback and handles eventual errors that may arise during the process.
+     * if the process is cancelled or encountered an error the function will start the LoginActivity again.
+     * @return a new facebookCallback for the facebook login button.
+     */
     private FacebookCallback<LoginResult> getFacebookCallback()
     {
-        Log.e(TAG, "Received Callback");
         final Intent returnToLogin = new Intent(this, LoginActivity.class);
 
         return new FacebookCallback<LoginResult>()
         {
+            /**
+             * Callback function for handling when the login is a success. If a success the AccessToken
+             * is passed to the handleFacebookAccessTokenMethod.
+             * @param loginResult the LoginResult received when the user is successfully logged in.
+             */
             @Override
             public void onSuccess(LoginResult loginResult)
             {
-                Log.e(TAG, "Successfully logged in.");
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
             @Override
             public void onCancel()
             {
-                Log.e(TAG, "Cancelled");
                 startActivity(returnToLogin);
             }
 
             @Override
             public void onError(FacebookException error)
             {
-                Log.e(TAG, "Error?", error);
                 //Make dialog popup with error message of some kind
                 startActivity(returnToLogin);
             }
         };
     }
 
+    /**
+     * When the FacebookCallback successfully logs in the AccessToken is registered with Firebase.
+     * If the token is handled successfully the function will launch the chatroom activity.
+     * Currently shows a ProgressDialog -> should be ProgressBar UI element instead.
+     * @param token the AccessToken returned from a successful Facebook login.
+     */
     private void handleFacebookAccessToken(AccessToken token)
     {
-        Log.e(TAG, "handleFacebookAccessToken:" + token);
         pd.show();
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
@@ -158,43 +208,39 @@ public class LoginActivity extends AppCompatActivity
         {
             if (task.isSuccessful())
             {
-                Log.e(TAG, "signInWithCredential:success");
                 pd.dismiss();
                 startActivity(chatRoomIntent);
             }
             else
             {
-                Log.e(TAG, "signInWithCredential:failure", task.getException());
                 pd.dismiss();
                 Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    /**
+     * This functions registers the google user with firebase.
+     * The method is called from onActivityResult when the google signInActivity returns a corresponding
+     * GoogleSignInAccount it is registered with firebase.
+     * @param acct the GoogleSignInAccount to be authenticated with firebase.
+     */
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct)
     {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
         pd.show();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task ->
         {
             if (task.isSuccessful())
             {
-                Log.d(TAG, "signInWithCredential:success");
                 pd.dismiss();
                 startActivity(chatRoomIntent);
             }
             else
             {
-                Log.w(TAG, "signInWithCredential:failure", task.getException());
+                pd.dismiss();
+                Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void signIn()
-    {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 }

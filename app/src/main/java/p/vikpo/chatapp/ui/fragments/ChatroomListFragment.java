@@ -19,26 +19,26 @@ import java.util.List;
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.comms.chatroomList.ChatroomListAdapter;
 
-public class ListFragment extends Fragment
+/**
+ * Fragment for containing the different chatrooms.
+ */
+public class ChatroomListFragment extends Fragment
 {
     private List<String> wrapperList = Arrays.asList("Hestemakker", "Hestemisser", "Hestetroels");
     private static final String TAG = "ChatApp - List Fragment";
 
-    public static ListFragment newInstance()
+    public static ChatroomListFragment newInstance()
     {
-        return new ListFragment();
+        return new ChatroomListFragment();
     }
 
-    @Override
-    public void onCreate(Bundle savedInstance)
-    {
-        super.onCreate(savedInstance);
-
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+        /*
+         * Initializes the view elements and initializes the ChatroomListAdapter
+         */
         View v = inflater.inflate(R.layout.fragment_list, container, false);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         ChatroomListAdapter chatroomListAdapter = new ChatroomListAdapter(wrapperList, chatroomChoiceListener);
@@ -60,12 +60,16 @@ public class ListFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
     }
 
+    /**
+     * Opens the chosen chatroom fragment - or at this point just the ChatroomFragment.
+     * @param title the title of the chatroom - currently what initializes the list based on a set of strings.
+     */
     private void openChatRoom(String title)
     {
         Log.e(TAG, "Opening " + title);
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, ChatRoomFragment.newInstance());
+        fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, ChatroomFragment.newInstance());
         fragmentTransaction.commit();
     }
 }

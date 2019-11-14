@@ -5,22 +5,39 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * ChatroomViewHolder for storing the ChatroomLayout view and handling binding of information.
+ */
 public class ChatroomViewHolder extends RecyclerView.ViewHolder
 {
     private ChatroomLayout chatroomLayout;
 
-    public ChatroomViewHolder(@NonNull ChatroomLayout chatroomLayout)
+    /**
+     * Construtor for initializing the UI based on the ChatroomLayout
+     * @param chatroomLayout the layout to be inflated
+     */
+    ChatroomViewHolder(@NonNull ChatroomLayout chatroomLayout)
     {
         super(chatroomLayout);
         this.chatroomLayout = chatroomLayout;
     }
 
-    public void bind(String name, String date, String message)
+    /**
+     * Bind function which binds the information received from the mparameters.
+     * @param name of the user
+     * @param date the string date of the message
+     * @param message the text of the message
+     */
+    void bind(String name, String date, String message)
     {
         chatroomLayout.setParams(name, date, message);
     }
 
-    public void bindAvatar(Bitmap avatar)
+    /**
+     * Binds the bitmap to the ImageView in the UI
+     * @param avatar avatar to be bound to the ImageView for each message
+     */
+    void bindAvatar(Bitmap avatar)
     {
         chatroomLayout.setAvatar(avatar);
     }
