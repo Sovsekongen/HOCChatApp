@@ -1,9 +1,9 @@
 package p.vikpo.chatapp.ui.activities;
 
-import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
+import android.transition.Fade;
 import android.util.Log;
+import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -15,7 +15,7 @@ import p.vikpo.chatapp.ui.fragments.ChatroomListFragment;
  * This class handles the ChatroomActivity and contains an UI-container for fragments,
  * namely the ChatroomListFragment and the ChatroomFragment.
  */
-public class ChatRoomActivity extends AppCompatActivity
+public class ChatroomActivity extends AppCompatActivity
 {
     private static final String TAG = "ChatApp - Chatroom Activity";
 
@@ -23,6 +23,7 @@ public class ChatRoomActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setTransition();
         setContentView(R.layout.activity_chat_room);
 
         Log.e(TAG, "Launched Chatroom Activity");
@@ -32,13 +33,10 @@ public class ChatRoomActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
-
-    /*
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    private void setTransition()
     {
-        super.onActivityResult(requestCode, resultCode, data);
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.ChatRoomFragmentContainer);
-        fragment.onActivityResult(requestCode, resultCode, data);
-    }*/
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        getWindow().setEnterTransition(new Fade(Fade.IN));
+        getWindow().setAllowReturnTransitionOverlap(true);
+    }
 }

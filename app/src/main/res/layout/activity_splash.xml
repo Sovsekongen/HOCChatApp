@@ -10,13 +10,23 @@
     tools:visibility="visible" >
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/splash_layout_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="152dp"
-        android:layout_marginTop="290dp"
-        android:layout_marginEnd="152dp"
-        android:text="Splash Fragment"
+        android:layout_marginTop="20dp"
+        android:text="@string/splash_layout_welcome"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/splash_layout_image" />
+
+    <ImageView
+        android:id="@+id/splash_layout_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:contentDescription="@string/splash_layout_content"
+        android:src="@drawable/ic_chat_black_192dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -2,4 +2,7 @@
     <string name="app_name">Chat Application</string>
     <string name="facebook_app_id">479603152656310</string>
     <string name="fb_login_protocol_scheme">fb479603152656310</string>
+
+    <string name="splash_layout_content">WelcomeImage</string>
+    <string name="splash_layout_welcome">Welcome!</string>
 </resources>

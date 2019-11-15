@@ -1,46 +1,41 @@
 package p.vikpo.chatapp.ui.activities;
 
-import android.app.Fragment;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.transition.Fade;
 import android.util.Log;
+import android.view.Window;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.ui.fragments.SplashFragment;
+import p.vikpo.chatapp.comms.Login.FirebaseLogin;
 
 /**
- * Main activity for the app. Contains a container containing a Fragment: SplashFragment.
+ * Main activity for the app.
  */
-public class MainActivity extends FragmentActivity
+public class MainActivity extends AppCompatActivity
 {
     private static final String TAG = "ChatApp MainActivity";
+    private final Handler delayHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        setTransition();
+        setContentView(R.layout.activity_splash);
 
         initBackend();
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.MainFragmentContainer, SplashFragment.newInstance());
-        fragmentTransaction.commit();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.MainFragmentContainer);
-        fragment.onActivityResult(requestCode, resultCode, data);
+        isLoggedIn();
     }
 
     /**
@@ -51,5 +46,40 @@ public class MainActivity extends FragmentActivity
         FirebaseApp.initializeApp(this);
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
+    }
+
+    private void startNewActivity(Intent intent)
+    {
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
+
+    private void isLoggedIn()
+    {
+        if (FirebaseLogin.isUserLoggedIn())
+        {
+            Log.e(TAG, "Is logged In");
+            load(new Intent(this, ChatroomActivity.class));
+        }
+        else
+        {
+            Log.e(TAG, "Is not logged In");
+            load(new Intent(this, LoginActivity.class));
+        }
+    }
+
+    /**
+     * Basic delay just for the sake of it
+     */
+    private void load(Intent intent)
+    {
+        delayHandler.postDelayed(() ->
+                startNewActivity(intent), 4000);
+    }
+
+    private void setTransition()
+    {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        getWindow().setExitTransition(new Fade(Fade.OUT));
+        getWindow().setAllowEnterTransitionOverlap(true);
     }
 }

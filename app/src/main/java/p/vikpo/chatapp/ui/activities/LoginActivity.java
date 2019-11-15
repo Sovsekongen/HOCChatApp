@@ -1,13 +1,13 @@
 package p.vikpo.chatapp.ui.activities;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.transition.Fade;
 import android.util.Log;
+import android.view.Window;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.AccessToken;
@@ -52,12 +52,14 @@ public class LoginActivity extends AppCompatActivity
     public void onCreate(Bundle savedInstance)
     {
         super.onCreate(savedInstance);
+
+        setTransistion();
         setContentView(R.layout.activity_login);
         Log.e(TAG, "Launched Login Fragment");
 
         pd = new ProgressDialog(this);
         pd.setMessage("Logging in");
-        chatRoomIntent = new Intent(this, ChatRoomActivity.class);
+        chatRoomIntent = new Intent(this, ChatroomActivity.class);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -69,7 +71,6 @@ public class LoginActivity extends AppCompatActivity
     public void onStart()
     {
         super.onStart();
-        isUserLoggedIn();
     }
 
     @Override
@@ -110,9 +111,7 @@ public class LoginActivity extends AppCompatActivity
                 .requestProfile()
                 .build();
 
-        //Opens the client with the earlier initiated sing in options.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
         //Registers the google sing in button and adds the onClickListener
         SignInButton googleSignInButton = findViewById(R.id.google_login_button);
         googleSignInButton.setOnClickListener(v -> signIn());
@@ -128,22 +127,6 @@ public class LoginActivity extends AppCompatActivity
         LoginButton fbLoginButton = findViewById(R.id.fb_login_button);
         fbLoginButton.setPermissions(Arrays.asList(EMAIL, PUBLIC_PROFILE));
         fbLoginButton.registerCallback(callbackManager, getFacebookCallback());
-    }
-
-    /**
-     * Check to see if the user is logged in - if the user is logged in, start the chatroom activity.
-     * If the user isn't logged in continue.
-     */
-    private void isUserLoggedIn()
-    {
-        if(mAuth.getCurrentUser() != null)
-        {
-            startActivity(chatRoomIntent);
-        }
-        else
-        {
-            Log.e(TAG, "User is not logged in");
-        }
     }
 
     /**
@@ -242,5 +225,12 @@ public class LoginActivity extends AppCompatActivity
                 Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setTransistion()
+    {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        getWindow().setEnterTransition(new Fade(Fade.IN));
+        getWindow().setAllowReturnTransitionOverlap(true);
     }
 }
