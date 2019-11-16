@@ -1,6 +1,9 @@
 package p.vikpo.chatapp.session;
 
 import android.util.Log;
+import android.widget.ImageView;
+
+import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,6 +25,8 @@ public class FirebaseChatroom
     private FirebaseUser mUser;
     private FirebaseFirestore mDatabase;
     private String document;
+    private ImageViewModel imageViewModel;
+    private Fragment parentFragment;
     private static final String COLLECTION_CHATROOM= "chatrooms";
     private static final String DOCUMENT_SUFFIX = "Messages";
     private static final String DOCUMENT_FIELD_LAST = "lastMessage";
@@ -37,6 +42,16 @@ public class FirebaseChatroom
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
+    }
+
+    public FirebaseChatroom(String document, ImageViewModel imageViewModel, Fragment parentFragment)
+    {
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseFirestore.getInstance();
+        mUser = mAuth.getCurrentUser();
+        this.document = document;
+        this.imageViewModel = imageViewModel;
+        this.parentFragment = parentFragment;
     }
 
     /**
@@ -97,20 +112,7 @@ public class FirebaseChatroom
                 .orderBy(DOCUMENT_FIELD_TIMER)
                 .limit(50);
 
-        query.addSnapshotListener((queryDocumentSnapshots, e) ->
-        {
-            if(e != null)
-            {
-                Log.e(TAG, "Encountered Query Failure", e);
-            }
-
-            if(queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty())
-            {
-                Log.e(TAG, "Updated query");
-            }
-        });
-
-        return new ChatroomAdapter(query, mUser.getUid());
+        return new ChatroomAdapter(query, mUser.getUid(), imageViewModel, parentFragment);
     }
 
     /**
@@ -122,19 +124,6 @@ public class FirebaseChatroom
     {
         Query query = mDatabase.collection(COLLECTION_CHATROOM)
                 .orderBy(DOCUMENT_FIELD_LAST, Query.Direction.DESCENDING);
-        query.addSnapshotListener((queryDocumentSnapshots, e) ->
-        {
-            if(e != null)
-            {
-                Log.e(TAG, "Encountered Query Failure", e);
-            }
-
-            if(queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty())
-            {
-                Log.e(TAG, "Updated query - " + COLLECTION_CHATROOM);
-                Log.e(TAG, queryDocumentSnapshots.getDocuments().toString());
-            }
-        });
 
         return new ChatroomListAdapter(query, listener);
     }

@@ -15,15 +15,16 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.comms.Login.FirebaseLogin;
+import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
 
 /**
  * Main activity for the app.
  */
 public class MainActivity extends AppCompatActivity
 {
-    private static final String TAG = "ChatApp MainActivity";
+    private static final String TAG = "ChatApp - MainActivity";
     private final Handler delayHandler = new Handler();
+    private FirebaseUserHandler mUserHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity
         FirebaseApp.initializeApp(this);
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
+
+        mUserHandler = new FirebaseUserHandler();
     }
 
     private void startNewActivity(Intent intent)
@@ -53,9 +56,12 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 
+    /**
+     * Checks whether the user is logged in by accessing the FirebaseUserHandler class.
+     */
     private void isLoggedIn()
     {
-        if (FirebaseLogin.isUserLoggedIn())
+        if (mUserHandler.isUserLoggedIn())
         {
             Log.e(TAG, "Is logged In");
             load(new Intent(this, ChatroomActivity.class));
@@ -72,10 +78,12 @@ public class MainActivity extends AppCompatActivity
      */
     private void load(Intent intent)
     {
-        delayHandler.postDelayed(() ->
-                startNewActivity(intent), 4000);
+        delayHandler.postDelayed(() -> startNewActivity(intent), 2000);
     }
 
+    /**
+     * Adds the transition between the last activity and possibly this.
+     */
     private void setTransition()
     {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);

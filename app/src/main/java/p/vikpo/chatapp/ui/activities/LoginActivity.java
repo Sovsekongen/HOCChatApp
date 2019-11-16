@@ -31,6 +31,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.Arrays;
 
 import p.vikpo.chatapp.R;
+import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
 
 /**
  * This class handles the login operations from Google and Facebook provided from Firebase.
@@ -39,6 +40,7 @@ public class LoginActivity extends AppCompatActivity
 {
     private CallbackManager callbackManager;
     private FirebaseAuth mAuth;
+    private FirebaseUserHandler firebaseUserHandler;
     private GoogleSignInClient mGoogleSignInClient;
     private Intent chatRoomIntent;
     private ProgressDialog pd;
@@ -53,7 +55,7 @@ public class LoginActivity extends AppCompatActivity
     {
         super.onCreate(savedInstance);
 
-        setTransistion();
+        setTransition();
         setContentView(R.layout.activity_login);
         Log.e(TAG, "Launched Login Fragment");
 
@@ -77,7 +79,6 @@ public class LoginActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == RC_SIGN_IN)
         {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -227,7 +228,10 @@ public class LoginActivity extends AppCompatActivity
         });
     }
 
-    private void setTransistion()
+    /**
+     * Adds the transition between the last activity and possibly this.
+     */
+    private void setTransition()
     {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         getWindow().setEnterTransition(new Fade(Fade.IN));

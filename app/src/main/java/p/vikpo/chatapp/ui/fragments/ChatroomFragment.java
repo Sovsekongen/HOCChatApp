@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,6 +28,7 @@ import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.comms.chatroom.ChatroomViewHolder;
 import p.vikpo.chatapp.comms.chatroom.MessageWrapper;
 import p.vikpo.chatapp.session.FirebaseChatroom;
+import p.vikpo.chatapp.session.ImageViewModel;
 
 /**
  * Fragment for containing each individual fragment - currently only supports a single chatroom.
@@ -42,6 +44,7 @@ public class ChatroomFragment extends Fragment
     private FirebaseUser mUser;
     private FirebaseChatroom firebaseConn;
     private FirestoreRecyclerAdapter<MessageWrapper, ChatroomViewHolder> adapter;
+    private ImageViewModel imageViewModel;
 
     private String document = "";
 
@@ -106,7 +109,8 @@ public class ChatroomFragment extends Fragment
             document = chatroomBundle.getString("chatroomName");
         }
 
-        firebaseConn = new FirebaseChatroom(document);
+        imageViewModel = ViewModelProviders.of(getActivity()).get(ImageViewModel.class);
+        firebaseConn = new FirebaseChatroom(document, imageViewModel, this);
     }
 
     @Override

@@ -10,18 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 
 import p.vikpo.chatapp.R;
+import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
+import p.vikpo.chatapp.comms.Login.UserWrapper;
 import p.vikpo.chatapp.comms.chatroomList.ChatroomListAdapter;
 import p.vikpo.chatapp.comms.chatroomList.ChatroomListViewHolder;
 import p.vikpo.chatapp.comms.chatroomList.ChatroomWrapper;
 import p.vikpo.chatapp.session.FirebaseChatroom;
+import p.vikpo.chatapp.session.ImageViewModel;
 
 /**
  * Fragment for containing the different chatrooms.
@@ -30,8 +33,11 @@ public class ChatroomListFragment extends Fragment
 {
     private static final String TAG = "ChatApp - List Fragment";
     private RecyclerView chatroomView;
+    private SwipeRefreshLayout pullToRefresh;
     private FirestoreRecyclerAdapter<ChatroomWrapper, ChatroomListViewHolder> adapter;
     private FirebaseChatroom firebaseChatroom;
+    private FirebaseUserHandler firebaseUserHandler;
+    private ImageViewModel imageViewModel;
 
     public static ChatroomListFragment newInstance()
     {
@@ -42,10 +48,15 @@ public class ChatroomListFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.fragment_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_chatroom_list, container, false);
 
         initUI(v);
         initAdapter();
+        addListener();
+
+        imageViewModel = ViewModelProviders.of(this).get(ImageViewModel.class);
+        firebaseUserHandler = new FirebaseUserHandler(imageViewModel);
+        firebaseUserHandler.addUserToDB();
 
         return v;
     }
@@ -53,6 +64,8 @@ public class ChatroomListFragment extends Fragment
     private void initUI(View v)
     {
         chatroomView = v.findViewById(R.id.chatroom_view);
+        pullToRefresh = v.findViewById(R.id.chatroom_swipe_view);
+
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         chatroomView.setHasFixedSize(true);
         chatroomView.setLayoutManager(layoutManager);
@@ -60,12 +73,18 @@ public class ChatroomListFragment extends Fragment
         firebaseChatroom = new FirebaseChatroom();
     }
 
+    /**
+     * Initializes the adapter given from the FirebaseChatroom class. Adds the adapter to the RecyclerView
+     */
     private void initAdapter()
     {
         adapter = firebaseChatroom.getChatroomListAdapter(chatroomChoiceListener);
         chatroomView.setAdapter(adapter);
     }
 
+    /**
+     * The onclick listener for handling a click on a chatroom.
+     */
     private ChatroomListAdapter.OnItemClickListener chatroomChoiceListener = v ->
             openChatRoom(v.getTitle().getText().toString());
 
@@ -81,18 +100,18 @@ public class ChatroomListFragment extends Fragment
      */
     private void openChatRoom(String title)
     {
-        Log.e(TAG, "Opening " + title);
-
-        Bundle chatroomBundle = new Bundle();
-        chatroomBundle.putString("chatroomName", title);
-
+        /*
+         * Initializes variables needed for handling the transaction to the given chatroom.
+         */
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         FirebaseChatroom firebaseChatroom = new FirebaseChatroom(title);
-        firebaseChatroom.updateChatroomSeen();
-
         Fragment chatFragment = ChatroomFragment.newInstance();
+        Bundle chatroomBundle = new Bundle();
+
+        chatroomBundle.putString("chatroomName", title);
+        firebaseChatroom.updateChatroomSeen();
         chatFragment.setArguments(chatroomBundle);
 
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, chatFragment)
                 .addToBackStack("listFragment")
                 .commit();
@@ -116,5 +135,17 @@ public class ChatroomListFragment extends Fragment
         {
             adapter.stopListening();
         }
+    }
+
+    /**
+     * Listener for handling the Pull-to-refresh action in the UI.
+     */
+    private void addListener()
+    {
+        pullToRefresh.setOnRefreshListener(() ->
+        {
+            adapter.notifyDataSetChanged();
+            pullToRefresh.setRefreshing(false);
+        });
     }
 }

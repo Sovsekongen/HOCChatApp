@@ -16,6 +16,8 @@ import java.net.URL;
  */
 public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
 {
+    private static final String TAG = "ChatApp - ImageDownlaoder";
+
     /**
      * Interface for accessing the bitmap when the AsyncTask has finished.
      */
@@ -45,6 +47,7 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
         Bitmap bitmap = null;
         try
         {
+            Log.e(TAG, "Downloading " + imageURL);
             // Download Image from URL
             InputStream input = new URL(imageURL).openStream();
             // Decode Bitmap

@@ -1,9 +1,15 @@
 package p.vikpo.chatapp.comms.chatroom;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -11,8 +17,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
 import java.util.Date;
+import java.util.HashMap;
 
-import p.vikpo.chatapp.session.ImageDownloader;
+import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
+import p.vikpo.chatapp.session.ImageViewModel;
 
 
 /**
@@ -21,6 +29,8 @@ import p.vikpo.chatapp.session.ImageDownloader;
 public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, ChatroomViewHolder>
 {
     private String userId;
+    private FirebaseUserHandler mUserHandler;
+    private Fragment parentFragment;
     private final int MESSAGE_IN_VIEW_TYPE  = 1;
     private final int MESSAGE_OUT_VIEW_TYPE = 2;
     private final String TAG = "ChatApp - Chatroom Adapter";
@@ -31,13 +41,16 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
      * @param query firestore query referencing the document to be shown in the chat
      * @param userId userid of the current user
      */
-    public ChatroomAdapter(Query query, String userId)
+    public ChatroomAdapter(Query query, String userId, ImageViewModel imageViewModel, Fragment parentFramgent)
     {
         super(new FirestoreRecyclerOptions
                 .Builder<MessageWrapper>()
                 .setQuery(query, MessageWrapper.class)
                 .build());
         this.userId = userId;
+
+        this.mUserHandler = new FirebaseUserHandler(imageViewModel);
+        this.parentFragment = parentFramgent;
     }
 
     /**
@@ -61,8 +74,8 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
 
     /**
      * When the ViewHolder is bound fill the ChatroomViewHolder-class with information for displaying.
-     * Furthermore it downloads the corresponding avatar-image.
-     * @param holder the ViewHolder whos responsobility it is to show the information
+     * Furthermore it looks the avatar up in a ViewModel and if it does'nt exist it is downloaded.
+     * @param holder the ViewHolder who's responsibility it is to show the information
      * @param position the position in the list
      * @param model the MessageWrapper containing the information to be displayed by the ViewHolder.
      */
@@ -73,8 +86,18 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
                 new Date(model.getMessageTimer()).toString(),
                 model.getMessageText());
 
-        ImageDownloader imageDownloader = new ImageDownloader(holder::bindAvatar);
-        imageDownloader.execute(model.getMessageAvatarUrl());
+        LiveData<HashMap<String, Bitmap>> userAvatarMap = mUserHandler.getAvatarMap(
+                model.getMessageUserId(), model.getMessageAvatarUrl());
+
+        userAvatarMap.observe(parentFragment, new Observer<HashMap<String, Bitmap>>()
+        {
+            @Override
+            public void onChanged(HashMap<String, Bitmap> stringBitmapHashMap)
+            {
+                Log.e(TAG, "Size: " + stringBitmapHashMap.size());
+                holder.bindAvatar(stringBitmapHashMap.get(model.getMessageUserId()));
+            }
+        });
     }
 
     /**

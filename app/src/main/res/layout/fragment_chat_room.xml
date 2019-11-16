@@ -17,7 +17,7 @@
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_send" />
+        app:srcCompat="@drawable/ic_camera_alt_black_24dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatroom_recycler"
@@ -42,6 +42,7 @@
         android:focusableInTouchMode="true"
         android:hint="Write Message"
         android:inputType="textMultiLine|text"
+        android:textAlignment="viewStart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/chatroom_message_fab"
         app:layout_constraintStart_toEndOf="@+id/chatroom_camera_fab" />
@@ -56,5 +57,5 @@
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_send" />
+        app:srcCompat="@drawable/ic_send_black_24dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
