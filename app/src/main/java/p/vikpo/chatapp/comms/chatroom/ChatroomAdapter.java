@@ -13,7 +13,6 @@ import com.google.firebase.firestore.Query;
 import java.util.Date;
 
 import p.vikpo.chatapp.session.ImageDownloader;
-import p.vikpo.chatapp.session.message.MessageWrapper;
 
 
 /**
@@ -38,7 +37,6 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
                 .Builder<MessageWrapper>()
                 .setQuery(query, MessageWrapper.class)
                 .build());
-        Log.e(TAG, userId);
         this.userId = userId;
     }
 
@@ -88,7 +86,6 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
     @Override
     public int getItemViewType(int position)
     {
-        Log.e(TAG, getItem(position).getMessageUserId() + " " + userId);
         if(getItem(position).getMessageUserId().equals(userId))
         {
             return MESSAGE_OUT_VIEW_TYPE;

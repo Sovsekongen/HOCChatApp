@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.session.message;
+package p.vikpo.chatapp.comms.chatroom;
 
 
 /**

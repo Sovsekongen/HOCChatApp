@@ -1,20 +1,20 @@
 package p.vikpo.chatapp.comms.chatroomList;
 
+import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 
 /**
  * Adapter class for displaying the different chatrooms.
  */
-public class ChatroomListAdapter extends RecyclerView.Adapter<ChatroomListViewHolder>
+public class ChatroomListAdapter extends FirestoreRecyclerAdapter<ChatroomWrapper, ChatroomListViewHolder>
 {
-    /**
-     *
-     */
     public interface OnItemClickListener
     {
         /**
@@ -23,18 +23,21 @@ public class ChatroomListAdapter extends RecyclerView.Adapter<ChatroomListViewHo
          */
         void onItemClick(ChatroomListLayout item);
     }
-
-    private List<String> data;
     private OnItemClickListener listener;
+    private static final int MESSAGE_NEW_VIEW_TYPE = 1;
+    private final String TAG = "ChatApp - Chatroom List Adapter";
 
     /**
-     * Construtor for contructing the RecyvlerView.Adapter
-     * @param data the data to be inputted into the list - currently Strings later on ChatroomWrapperObjects
+     *
+     * @param query
      * @param listener the OnClickListener for the adapter
      */
-    public ChatroomListAdapter(List<String> data, OnItemClickListener listener)
+    public ChatroomListAdapter(Query query, OnItemClickListener listener)
     {
-        this.data = data;
+        super(new FirestoreRecyclerOptions
+                .Builder<ChatroomWrapper>()
+                .setQuery(query, ChatroomWrapper.class)
+                .build());
         this.listener = listener;
     }
 
@@ -49,7 +52,7 @@ public class ChatroomListAdapter extends RecyclerView.Adapter<ChatroomListViewHo
     @Override
     public ChatroomListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        ChatroomListLayout chatroomListLayout = new ChatroomListLayout(parent.getContext());
+        ChatroomListLayout chatroomListLayout = new ChatroomListLayout(parent.getContext(), viewType);
         chatroomListLayout.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -61,21 +64,32 @@ public class ChatroomListAdapter extends RecyclerView.Adapter<ChatroomListViewHo
      * When the ViewHolder is bound fill the ChatroomListViewHolder-class with information for displaying.
      * @param holder the ViewHolder whos responsibility it is to show the information
      * @param position the position in the list
+     * @param model
      */
     @Override
-    public void onBindViewHolder(@NonNull ChatroomListViewHolder holder, int position)
+    protected void onBindViewHolder(@NonNull ChatroomListViewHolder holder, int position, @NonNull ChatroomWrapper model)
     {
-        holder.bind(data.get(position), listener);
+        holder.bind(model.getName(), model.getDescription(), listener);
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        if(getItem(position).isNewMessage())
+        {
+            return MESSAGE_NEW_VIEW_TYPE;
+        }
+
+        return 0;
     }
 
     /**
-     * Gets the number of items in the Recycler
-     * @return number of RecyclerItems
+     * For discovering potential errors.
+     * @param e the FirebaseFirestoreException to be printed.
      */
     @Override
-    public int getItemCount()
+    public void onError(FirebaseFirestoreException e)
     {
-        return data.size();
+        Log.e(TAG, "Encountered Error", e);
     }
-
 }

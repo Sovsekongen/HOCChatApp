@@ -6,14 +6,14 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * ChatroomListViewHolder for storing the ChatroomListLayout view and handling binding of information.
  */
-class ChatroomListViewHolder extends RecyclerView.ViewHolder
+public class ChatroomListViewHolder extends RecyclerView.ViewHolder
 {
-    private ChatroomListLayout itemView;
+    private ChatroomListLayout chatroomListLayout;
 
-    ChatroomListViewHolder(@NonNull ChatroomListLayout itemView)
+    public ChatroomListViewHolder(@NonNull ChatroomListLayout chatroomListLayout)
     {
-        super(itemView);
-        this.itemView = itemView;
+        super(chatroomListLayout);
+        this.chatroomListLayout = chatroomListLayout;
     }
 
     /**
@@ -21,9 +21,9 @@ class ChatroomListViewHolder extends RecyclerView.ViewHolder
      * @param title the title of the chatroom
      * @param listener the onClickListener for determening what happends when the chatroom is clicked.
      */
-    void bind(String title, final ChatroomListAdapter.OnItemClickListener listener)
+    public void bind(String title, String description, final ChatroomListAdapter.OnItemClickListener listener)
     {
-        itemView.setTitle(title);
-        itemView.setOnClickListener(v -> listener.onItemClick(itemView));
+        chatroomListLayout.setParams(title, description);
+        chatroomListLayout.setOnClickListener(v -> listener.onItemClick(chatroomListLayout));
     }
 }

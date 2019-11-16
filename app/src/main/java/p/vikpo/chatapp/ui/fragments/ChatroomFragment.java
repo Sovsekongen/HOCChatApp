@@ -3,15 +3,18 @@ package p.vikpo.chatapp.ui.fragments;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,13 +22,11 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.comms.chatroom.ChatroomAdapter;
 import p.vikpo.chatapp.comms.chatroom.ChatroomViewHolder;
-import p.vikpo.chatapp.session.message.MessageWrapper;
+import p.vikpo.chatapp.comms.chatroom.MessageWrapper;
+import p.vikpo.chatapp.session.FirebaseChatroom;
 
 /**
  * Fragment for containing each individual fragment - currently only supports a single chatroom.
@@ -33,14 +34,16 @@ import p.vikpo.chatapp.session.message.MessageWrapper;
 public class ChatroomFragment extends Fragment
 {
     private static final String TAG = "ChatApp - Chatroom Fragment";
+
     private EditText inputBox;
     private FloatingActionButton activateCameraButton, sendButton;
-    private FirebaseAuth mAuth;
     private RecyclerView recyclerView;
+
     private FirebaseUser mUser;
-    private FirebaseFirestore mDatabase;
+    private FirebaseChatroom firebaseConn;
     private FirestoreRecyclerAdapter<MessageWrapper, ChatroomViewHolder> adapter;
-    private Query query;
+
+    private String document = "";
 
     static ChatroomFragment newInstance()
     {
@@ -57,7 +60,10 @@ public class ChatroomFragment extends Fragment
          * Initialize the UI and the recycler based on a specific document - currently only supports on document
          */
         initUI(v);
-        initRecycler("messages");
+        getChatroomDocument();
+        initAdapter();
+
+        onBackCallback();
 
         return v;
     }
@@ -77,35 +83,30 @@ public class ChatroomFragment extends Fragment
 
         sendButton.setOnClickListener(sendButtonOnClick);
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
-        mDatabase = FirebaseFirestore.getInstance();
     }
 
     /**
      * Inits the recycler adapter and based on a query.
      * The query queries the firebase DB for information based on a specific given document.
-     * @param document the document being quiried by the query.
      */
-    private void initRecycler(String document)
+    private void initAdapter()
     {
-        query = mDatabase.collection(document).orderBy("messageTimer").limit(50);
-        query.addSnapshotListener((queryDocumentSnapshots, e) ->
-        {
-            if(e != null)
-            {
-                Log.e(TAG, "Encountered Query Failure", e);
-            }
-
-            if(queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty())
-            {
-                Log.e(TAG, "Updated query");
-            }
-        });
-
-        adapter = new ChatroomAdapter(query, mUser.getUid());
-
+        adapter = firebaseConn.getChatroomMessageAdapter();
         recyclerView.setAdapter(adapter);
+    }
+
+    private void getChatroomDocument()
+    {
+        Bundle chatroomBundle = getArguments();
+
+        if(chatroomBundle != null)
+        {
+            document = chatroomBundle.getString("chatroomName");
+        }
+
+        firebaseConn = new FirebaseChatroom(document);
     }
 
     @Override
@@ -124,19 +125,21 @@ public class ChatroomFragment extends Fragment
         public void onClick(View v)
         {
             String message = inputBox.getText().toString();
+
             if(TextUtils.isEmpty(message))
             {
                 Toast.makeText(getContext(), "Input text is empty", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            mDatabase.collection("messages")
-                    .add(new MessageWrapper(
+            firebaseConn.addMessage(new MessageWrapper(
                     mUser.getDisplayName(),
                     inputBox.getText().toString(),
                     mUser.getUid(),
                     System.currentTimeMillis(),
                     mUser.getPhotoUrl().toString()));
+
+            firebaseConn.updateChatroomNew();
 
             inputBox.setText("");
         }
@@ -160,5 +163,20 @@ public class ChatroomFragment extends Fragment
         {
             adapter.stopListening();
         }
+    }
+
+    private void onBackCallback()
+    {
+        OnBackPressedCallback callback = new OnBackPressedCallback(true)
+        {
+            @Override
+            public void handleOnBackPressed()
+            {
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, ChatroomListFragment.newInstance())
+                        .commit();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 }

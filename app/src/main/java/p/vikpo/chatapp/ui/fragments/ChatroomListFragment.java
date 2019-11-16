@@ -13,19 +13,25 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Arrays;
-import java.util.List;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.comms.chatroomList.ChatroomListAdapter;
+import p.vikpo.chatapp.comms.chatroomList.ChatroomListViewHolder;
+import p.vikpo.chatapp.comms.chatroomList.ChatroomWrapper;
+import p.vikpo.chatapp.session.FirebaseChatroom;
 
 /**
  * Fragment for containing the different chatrooms.
  */
 public class ChatroomListFragment extends Fragment
 {
-    private List<String> wrapperList = Arrays.asList("Hestemakker", "Hestemisser", "Hestetroels");
     private static final String TAG = "ChatApp - List Fragment";
+    private RecyclerView chatroomView;
+    private FirestoreRecyclerAdapter<ChatroomWrapper, ChatroomListViewHolder> adapter;
+    private FirebaseChatroom firebaseChatroom;
 
     public static ChatroomListFragment newInstance()
     {
@@ -36,19 +42,28 @@ public class ChatroomListFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        /*
-         * Initializes the view elements and initializes the ChatroomListAdapter
-         */
         View v = inflater.inflate(R.layout.fragment_list, container, false);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        ChatroomListAdapter chatroomListAdapter = new ChatroomListAdapter(wrapperList, chatroomChoiceListener);
 
-        RecyclerView chatroomView = v.findViewById(R.id.chatroom_view);
-        chatroomView.setHasFixedSize(true);
-        chatroomView.setLayoutManager(layoutManager);
-        chatroomView.setAdapter(chatroomListAdapter);
+        initUI(v);
+        initAdapter();
 
         return v;
+    }
+
+    private void initUI(View v)
+    {
+        chatroomView = v.findViewById(R.id.chatroom_view);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        chatroomView.setHasFixedSize(true);
+        chatroomView.setLayoutManager(layoutManager);
+
+        firebaseChatroom = new FirebaseChatroom();
+    }
+
+    private void initAdapter()
+    {
+        adapter = firebaseChatroom.getChatroomListAdapter(chatroomChoiceListener);
+        chatroomView.setAdapter(adapter);
     }
 
     private ChatroomListAdapter.OnItemClickListener chatroomChoiceListener = v ->
@@ -68,8 +83,38 @@ public class ChatroomListFragment extends Fragment
     {
         Log.e(TAG, "Opening " + title);
 
+        Bundle chatroomBundle = new Bundle();
+        chatroomBundle.putString("chatroomName", title);
+
+        FirebaseChatroom firebaseChatroom = new FirebaseChatroom(title);
+        firebaseChatroom.updateChatroomSeen();
+
+        Fragment chatFragment = ChatroomFragment.newInstance();
+        chatFragment.setArguments(chatroomBundle);
+
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, ChatroomFragment.newInstance());
-        fragmentTransaction.commit();
+        fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, chatFragment)
+                .addToBackStack("listFragment")
+                .commit();
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        if(adapter != null)
+        {
+            adapter.startListening();
+        }
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        if(adapter != null)
+        {
+            adapter.stopListening();
+        }
     }
 }
