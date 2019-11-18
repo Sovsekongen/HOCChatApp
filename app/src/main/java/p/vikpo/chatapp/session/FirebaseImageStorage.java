@@ -9,7 +9,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
 
 public class FirebaseImageStorage
 {
@@ -34,9 +33,10 @@ public class FirebaseImageStorage
     {
         imageRef = storage.getReference(title);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
 
         UploadTask uploadTask = imageRef.putBytes(data);
         uploadTask.addOnFailureListener(exception -> Log.e(TAG, "Encountered Error", exception))
@@ -45,12 +45,12 @@ public class FirebaseImageStorage
 
     public void getImage(String title, OnDownloadResult onDownloadResult)
     {
-        Log.e(TAG, "Downloading " + title);
         imageRef = storage.getReference(title);
+
         imageRef.getBytes(ONE_MEGABYTE)
                 .addOnSuccessListener(bytes ->
                         {
-                            Log.e(TAG, "Successfully downloaded chat image");
+                            Log.e(TAG, "Successfully downloaded chat image, length: " + bytes.length);
                             onDownloadResult.downloadResult(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                         })
                 .addOnFailureListener(exception ->

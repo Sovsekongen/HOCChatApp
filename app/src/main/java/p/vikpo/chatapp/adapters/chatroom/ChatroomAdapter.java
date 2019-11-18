@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import p.vikpo.chatapp.session.FirebaseUserHandler;
-import p.vikpo.chatapp.session.FirebaseImageStorage;
 import p.vikpo.chatapp.session.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.wrappers.MessageImageWrapper;
 import p.vikpo.chatapp.wrappers.MessageWrapper;
@@ -129,6 +128,11 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
         Log.e(TAG, "Encountered Error", e);
     }
 
+    /**
+     * Sets the avatar for the current message.
+     * @param model the model which has access to the url
+     * @param holder the holder for accessing the UI
+     */
     private void setAvatar(MessageWrapper model, ChatroomViewHolder holder)
     {
         LiveData<HashMap<String, Bitmap>> userAvatarMap = mUserHandler.getAvatarMap(
