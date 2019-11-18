@@ -8,4 +8,8 @@
 
     <string name="channel_name">ChatApp Channel</string>
     <string name="channel_description">Channel for handling push notifications</string>
+
+    <string name="dialog_title">Image source</string>
+    <string name="dialog_ok_button">Olk</string>
+    <string name="dialog_cancel_button">Cancel</string>
 </resources>

@@ -26,12 +26,14 @@ import com.google.firebase.auth.FirebaseUser;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.adapters.chatroom.ChatroomViewHolder;
+import p.vikpo.chatapp.ui.activities.CameraActivity;
 import p.vikpo.chatapp.wrappers.MessageImageWrapper;
 import p.vikpo.chatapp.wrappers.MessageWrapper;
 import p.vikpo.chatapp.session.FirebaseChatroom;
 import p.vikpo.chatapp.session.FirebaseImageStorage;
 import p.vikpo.chatapp.session.viewmodel.AvatarViewModel;
-import p.vikpo.chatapp.ui.activities.CameraActivity;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Fragment for containing each individual fragment - currently only supports a single chatroom.
@@ -91,7 +93,7 @@ public class ChatroomFragment extends Fragment
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         sendButton.setOnClickListener(sendButtonOnClick);
-        activateCameraButton.setOnClickListener(cameraButtonOnClick);
+        activateCameraButton.setOnClickListener(v1 -> showDialog());
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
@@ -155,17 +157,11 @@ public class ChatroomFragment extends Fragment
         }
     };
 
-    private View.OnClickListener cameraButtonOnClick = v ->
-    {
-        Intent cameraIntent = new Intent(getContext(), CameraActivity.class);
-        cameraIntent.putExtra("chatroomName", getArguments().getString("chatroomName"));
-        startActivityForResult(cameraIntent, REQUEST_RETURN_IMAGE);
-    };
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.e(TAG, "Request: " + requestCode + ", Result: " + resultCode);
 
         if (requestCode == REQUEST_RETURN_IMAGE)
         {
@@ -180,6 +176,10 @@ public class ChatroomFragment extends Fragment
                     System.currentTimeMillis(),
                     mUser.getPhotoUrl().toString(),
                     imageTitle));
+        }
+        else
+        {
+            Toast.makeText(getActivity(), "Unable to get image", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -220,6 +220,12 @@ public class ChatroomFragment extends Fragment
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+    }
+
+    private void showDialog()
+    {
+        Intent cameraIntent = new Intent(getContext(), CameraActivity.class);
+        startActivityForResult(cameraIntent, REQUEST_RETURN_IMAGE);
     }
 /*
     private void createNotificationChannel()

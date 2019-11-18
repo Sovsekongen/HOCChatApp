@@ -50,7 +50,6 @@ public class FirebaseImageStorage
         imageRef.getBytes(ONE_MEGABYTE)
                 .addOnSuccessListener(bytes ->
                         {
-                            Log.e(TAG, "Successfully downloaded chat image, length: " + bytes.length);
                             onDownloadResult.downloadResult(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                         })
                 .addOnFailureListener(exception ->

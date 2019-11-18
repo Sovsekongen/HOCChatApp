@@ -31,7 +31,7 @@ public class ChatroomLayout extends ConstraintLayout
     public ChatroomLayout(Context context, int viewType)
     {
         super(context);
-        Log.e(TAG, "Viewtype: " + viewType);
+
         switch(viewType)
         {
             case MESSAGE_IN_IMAGE:

@@ -1,7 +1,6 @@
 package p.vikpo.chatapp.adapters.chatroom;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
