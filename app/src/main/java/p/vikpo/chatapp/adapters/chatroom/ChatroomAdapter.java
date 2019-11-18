@@ -85,20 +85,8 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
     protected void onBindViewHolder(@NonNull ChatroomViewHolder holder, int position, @NonNull MessageImageWrapper model)
     {
         setAvatar(model, holder);
-
-        if(model.getMessageBitmapUrl() != null)
-        {
-            holder.bind(model.getMessageUser(), new Date(model.getMessageTimer()).toString(), "");
-
-            FirebaseImageStorage imageStorage = new FirebaseImageStorage();
-            imageStorage.getImage(model.getMessageBitmapUrl(), holder::bindImage);
-        }
-        else
-        {
-            holder.bind(model.getMessageUser(),
-                    new Date(model.getMessageTimer()).toString(),
-                    model.getMessageText());
-        }
+        holder.bind(model.getMessageUser(), new Date(model.getMessageTimer()).toString(),
+                model.getMessageText(), model.getMessageBitmapUrl());
     }
 
     /**
@@ -110,11 +98,6 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
     @Override
     public int getItemViewType(int position)
     {
-        if(getItem(position).getMessageUserId().equals(userId))
-        {
-            return MESSAGE_OUT_VIEW_TYPE;
-        }
-
         if(getItem(position).getMessageBitmapUrl() != null)
         {
             if(getItem(position).getMessageUserId().equals(userId))
@@ -123,8 +106,17 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
             }
             return MESSAGE_IN_IMAGE;
         }
-
-        return MESSAGE_IN_VIEW_TYPE;
+        else
+        {
+            if(getItem(position).getMessageUserId().equals(userId))
+            {
+                return MESSAGE_OUT_VIEW_TYPE;
+            }
+            else
+            {
+                return MESSAGE_IN_VIEW_TYPE;
+            }
+        }
     }
 
     /**

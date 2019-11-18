@@ -2,6 +2,7 @@ package p.vikpo.chatapp.adapters.chatroom;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ public class ChatroomLayout extends ConstraintLayout
     private final int MESSAGE_OUT_VIEW_TYPE = 2;
     private final int MESSAGE_IN_IMAGE = 3;
     private  final int MESSAGE_OUT_IMAGE = 4;
+    private static final String TAG = "ChatApp - ChatroomLayout";
 
     /**
      * Construtor for inflating the view and initialising the UI-elemntes.
@@ -29,7 +31,7 @@ public class ChatroomLayout extends ConstraintLayout
     public ChatroomLayout(Context context, int viewType)
     {
         super(context);
-
+        Log.e(TAG, "Viewtype: " + viewType);
         switch(viewType)
         {
             case MESSAGE_IN_IMAGE:

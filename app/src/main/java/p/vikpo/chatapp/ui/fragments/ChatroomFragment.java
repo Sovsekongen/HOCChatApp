@@ -41,7 +41,7 @@ public class ChatroomFragment extends Fragment
     private static final String TAG = "ChatApp - Chatroom Fragment";
     private static final String CHANNEL_ID = "";
     private static final int REQUEST_RETURN_IMAGE = 2010;
-    private static final int MY_CAMERA_PERMISSION_CODE = 100;
+    private static final String IMAGE_LOCATION = "images/";
 
     private EditText inputBox;
     private FloatingActionButton activateCameraButton, sendButton;
@@ -172,7 +172,7 @@ public class ChatroomFragment extends Fragment
             String imageTitle = mUser.getUid() + System.currentTimeMillis();
             FirebaseImageStorage imageStorage = new FirebaseImageStorage();
 
-            imageStorage.uploadImage(imageTitle, data.getParcelableExtra("messageImage"));
+            imageStorage.uploadImage(IMAGE_LOCATION + imageTitle, data.getParcelableExtra("messageImage"));
             firebaseConn.addMessage(
                     new MessageImageWrapper(mUser.getDisplayName(),
                     inputBox.getText().toString(),

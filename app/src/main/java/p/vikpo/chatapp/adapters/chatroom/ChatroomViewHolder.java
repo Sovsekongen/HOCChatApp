@@ -5,12 +5,15 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import p.vikpo.chatapp.session.FirebaseImageStorage;
+
 /**
  * ChatroomViewHolder for storing the ChatroomLayout view and handling binding of information.
  */
 public class ChatroomViewHolder extends RecyclerView.ViewHolder
 {
     private ChatroomLayout chatroomLayout;
+    private static final String IMAGE_LOCATION = "images/";
 
     /**
      * Construtor for initializing the UI based on the ChatroomLayout
@@ -27,8 +30,9 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder
      * @param name of the user
      * @param date the string date of the message
      * @param message the text of the message
+     * @param imageUrl
      */
-    void bind(String name, String date, String message)
+    void bind(String name, String date, String message, String imageUrl)
     {
         if(!message.equals(""))
         {
@@ -37,6 +41,7 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder
         else
         {
             chatroomLayout.setParams(name, date);
+            bindImage(imageUrl);
         }
     }
 
@@ -49,8 +54,9 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder
         chatroomLayout.setAvatar(avatar);
     }
 
-    void bindImage(Bitmap image)
+    private void bindImage(String bitmapUrl)
     {
-        chatroomLayout.setMessageImage(image);
+        FirebaseImageStorage imageStorage = new FirebaseImageStorage();
+        imageStorage.getImage(IMAGE_LOCATION + bitmapUrl, chatroomLayout::setMessageImage);
     }
 }

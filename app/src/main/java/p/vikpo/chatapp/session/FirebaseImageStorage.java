@@ -9,6 +9,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 
 public class FirebaseImageStorage
 {
@@ -18,6 +19,9 @@ public class FirebaseImageStorage
     }
 
     private FirebaseStorage storage;
+    private StorageReference imageRef;
+    private static final long ONE_MEGABYTE = 1024 * 1024;
+
 
     private static final String TAG = "ChatApp - FirebaseImageStorage";
 
@@ -28,21 +32,22 @@ public class FirebaseImageStorage
 
     public void uploadImage(String title, Bitmap image)
     {
-        StorageReference storageRef = storage.getReference("images/" + title);
+        imageRef = storage.getReference(title);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
-        UploadTask uploadTask = storageRef.putBytes(data);
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+        UploadTask uploadTask = imageRef.putBytes(data);
         uploadTask.addOnFailureListener(exception -> Log.e(TAG, "Encountered Error", exception))
                 .addOnSuccessListener(taskSnapshot -> Log.e(TAG, "Uploaded Image " + title));
     }
 
     public void getImage(String title, OnDownloadResult onDownloadResult)
     {
-        StorageReference storageRef = storage.getReference("images/" + title);
-        final long ONE_MEGABYTE = 1024 * 1024;
-        storageRef.getBytes(ONE_MEGABYTE)
+        Log.e(TAG, "Downloading " + title);
+        imageRef = storage.getReference(title);
+        imageRef.getBytes(ONE_MEGABYTE)
                 .addOnSuccessListener(bytes ->
                         {
                             Log.e(TAG, "Successfully downloaded chat image");
