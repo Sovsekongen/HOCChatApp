@@ -31,7 +31,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.Arrays;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
 
 /**
  * This class handles the login operations from Google and Facebook provided from Firebase.
@@ -40,7 +39,6 @@ public class LoginActivity extends AppCompatActivity
 {
     private CallbackManager callbackManager;
     private FirebaseAuth mAuth;
-    private FirebaseUserHandler firebaseUserHandler;
     private GoogleSignInClient mGoogleSignInClient;
     private Intent chatRoomIntent;
     private ProgressDialog pd;

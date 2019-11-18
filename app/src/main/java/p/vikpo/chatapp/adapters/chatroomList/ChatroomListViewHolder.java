@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.comms.chatroomList;
+package p.vikpo.chatapp.adapters.chatroomList;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;

@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.comms.chatroomList;
+package p.vikpo.chatapp.adapters.chatroomList;
 
 import android.content.Context;
 import android.graphics.Color;

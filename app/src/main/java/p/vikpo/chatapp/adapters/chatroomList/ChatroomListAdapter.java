@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.comms.chatroomList;
+package p.vikpo.chatapp.adapters.chatroomList;
 
 import android.util.Log;
 import android.view.ViewGroup;
@@ -9,6 +9,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+
+import p.vikpo.chatapp.wrappers.ChatroomWrapper;
 
 /**
  * Adapter class for displaying the different chatrooms.

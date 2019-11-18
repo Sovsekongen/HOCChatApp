@@ -15,7 +15,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
+import p.vikpo.chatapp.session.FirebaseUserHandler;
 
 /**
  * Main activity for the app.

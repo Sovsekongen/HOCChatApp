@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.comms.chatroom;
+package p.vikpo.chatapp.adapters.chatroom;
 
 import android.graphics.Bitmap;
 
@@ -30,7 +30,14 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder
      */
     void bind(String name, String date, String message)
     {
-        chatroomLayout.setParams(name, date, message);
+        if(!message.equals(""))
+        {
+            chatroomLayout.setParams(name, date, message);
+        }
+        else
+        {
+            chatroomLayout.setParams(name, date);
+        }
     }
 
     /**
@@ -40,5 +47,10 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder
     void bindAvatar(Bitmap avatar)
     {
         chatroomLayout.setAvatar(avatar);
+    }
+
+    void bindImage(Bitmap image)
+    {
+        chatroomLayout.setMessageImage(image);
     }
 }

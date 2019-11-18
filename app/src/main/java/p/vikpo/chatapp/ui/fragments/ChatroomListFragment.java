@@ -1,7 +1,6 @@
 package p.vikpo.chatapp.ui.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +17,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
-import p.vikpo.chatapp.comms.Login.UserWrapper;
-import p.vikpo.chatapp.comms.chatroomList.ChatroomListAdapter;
-import p.vikpo.chatapp.comms.chatroomList.ChatroomListViewHolder;
-import p.vikpo.chatapp.comms.chatroomList.ChatroomWrapper;
+import p.vikpo.chatapp.session.FirebaseUserHandler;
+import p.vikpo.chatapp.adapters.chatroomList.ChatroomListAdapter;
+import p.vikpo.chatapp.adapters.chatroomList.ChatroomListViewHolder;
+import p.vikpo.chatapp.session.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.wrappers.ChatroomWrapper;
 import p.vikpo.chatapp.session.FirebaseChatroom;
-import p.vikpo.chatapp.session.ImageViewModel;
 
 /**
  * Fragment for containing the different chatrooms.
@@ -37,7 +35,7 @@ public class ChatroomListFragment extends Fragment
     private FirestoreRecyclerAdapter<ChatroomWrapper, ChatroomListViewHolder> adapter;
     private FirebaseChatroom firebaseChatroom;
     private FirebaseUserHandler firebaseUserHandler;
-    private ImageViewModel imageViewModel;
+    private AvatarViewModel avatarViewModel;
 
     public static ChatroomListFragment newInstance()
     {
@@ -54,8 +52,8 @@ public class ChatroomListFragment extends Fragment
         initAdapter();
         addListener();
 
-        imageViewModel = ViewModelProviders.of(this).get(ImageViewModel.class);
-        firebaseUserHandler = new FirebaseUserHandler(imageViewModel);
+        avatarViewModel = ViewModelProviders.of(this).get(AvatarViewModel.class);
+        firebaseUserHandler = new FirebaseUserHandler(avatarViewModel);
         firebaseUserHandler.addUserToDB();
 
         return v;

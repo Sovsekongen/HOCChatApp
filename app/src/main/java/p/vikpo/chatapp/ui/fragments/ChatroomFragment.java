@@ -1,9 +1,9 @@
 package p.vikpo.chatapp.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +25,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.comms.chatroom.ChatroomViewHolder;
-import p.vikpo.chatapp.comms.chatroom.MessageWrapper;
+import p.vikpo.chatapp.adapters.chatroom.ChatroomViewHolder;
+import p.vikpo.chatapp.wrappers.MessageImageWrapper;
+import p.vikpo.chatapp.wrappers.MessageWrapper;
 import p.vikpo.chatapp.session.FirebaseChatroom;
-import p.vikpo.chatapp.session.ImageViewModel;
+import p.vikpo.chatapp.session.FirebaseImageStorage;
+import p.vikpo.chatapp.session.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.ui.activities.CameraActivity;
 
 /**
  * Fragment for containing each individual fragment - currently only supports a single chatroom.
@@ -36,6 +39,9 @@ import p.vikpo.chatapp.session.ImageViewModel;
 public class ChatroomFragment extends Fragment
 {
     private static final String TAG = "ChatApp - Chatroom Fragment";
+    private static final String CHANNEL_ID = "";
+    private static final int REQUEST_RETURN_IMAGE = 2010;
+    private static final int MY_CAMERA_PERMISSION_CODE = 100;
 
     private EditText inputBox;
     private FloatingActionButton activateCameraButton, sendButton;
@@ -43,12 +49,12 @@ public class ChatroomFragment extends Fragment
 
     private FirebaseUser mUser;
     private FirebaseChatroom firebaseConn;
-    private FirestoreRecyclerAdapter<MessageWrapper, ChatroomViewHolder> adapter;
-    private ImageViewModel imageViewModel;
+    private FirestoreRecyclerAdapter<MessageImageWrapper, ChatroomViewHolder> adapter;
+    private AvatarViewModel avatarViewModel;
 
     private String document = "";
 
-    static ChatroomFragment newInstance()
+    public static ChatroomFragment newInstance()
     {
         return new ChatroomFragment();
     }
@@ -85,9 +91,11 @@ public class ChatroomFragment extends Fragment
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         sendButton.setOnClickListener(sendButtonOnClick);
+        activateCameraButton.setOnClickListener(cameraButtonOnClick);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
+        //createNotificationChannel();
     }
 
     /**
@@ -109,8 +117,8 @@ public class ChatroomFragment extends Fragment
             document = chatroomBundle.getString("chatroomName");
         }
 
-        imageViewModel = ViewModelProviders.of(getActivity()).get(ImageViewModel.class);
-        firebaseConn = new FirebaseChatroom(document, imageViewModel, this);
+        avatarViewModel = ViewModelProviders.of(getActivity()).get(AvatarViewModel.class);
+        firebaseConn = new FirebaseChatroom(document, avatarViewModel, this);
     }
 
     @Override
@@ -143,13 +151,39 @@ public class ChatroomFragment extends Fragment
                     System.currentTimeMillis(),
                     mUser.getPhotoUrl().toString()));
 
-            firebaseConn.updateChatroomNew();
-
             inputBox.setText("");
         }
     };
 
+    private View.OnClickListener cameraButtonOnClick = v ->
+    {
+        Intent cameraIntent = new Intent(getContext(), CameraActivity.class);
+        cameraIntent.putExtra("chatroomName", getArguments().getString("chatroomName"));
+        startActivityForResult(cameraIntent, REQUEST_RETURN_IMAGE);
+    };
+
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_RETURN_IMAGE)
+        {
+            String imageTitle = mUser.getUid() + System.currentTimeMillis();
+            FirebaseImageStorage imageStorage = new FirebaseImageStorage();
+
+            imageStorage.uploadImage(imageTitle, data.getParcelableExtra("messageImage"));
+            firebaseConn.addMessage(
+                    new MessageImageWrapper(mUser.getDisplayName(),
+                    inputBox.getText().toString(),
+                    mUser.getUid(),
+                    System.currentTimeMillis(),
+                    mUser.getPhotoUrl().toString(),
+                    imageTitle));
+        }
+    }
+
+        @Override
     public void onStart()
     {
         super.onStart();
@@ -169,6 +203,10 @@ public class ChatroomFragment extends Fragment
         }
     }
 
+    /**
+     * Function for instantiating the function that handles the proper reaction when the back button
+     * is pressed in each chatroom.
+     */
     private void onBackCallback()
     {
         OnBackPressedCallback callback = new OnBackPressedCallback(true)
@@ -183,4 +221,26 @@ public class ChatroomFragment extends Fragment
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
+/*
+    private void createNotificationChannel()
+    {
+        CharSequence name = getString(R.string.channel_name);
+        String description = getString(R.string.channel_description);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+        NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+    }
+
+    public NotificationCompat.Builder buildNotification()
+    {
+        return new NotificationCompat.Builder(getContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_camera_alt_black_24dp)
+                .setContentTitle("My notification")
+                .setContentText("Much longer text that cannot fit one line...")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                .bigText("Much longer text that cannot fit one line..."))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+    }*/
 }

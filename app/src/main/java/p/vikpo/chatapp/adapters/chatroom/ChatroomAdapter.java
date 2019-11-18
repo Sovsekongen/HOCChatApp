@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.comms.chatroom;
+package p.vikpo.chatapp.adapters.chatroom;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -6,10 +6,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.OnLifecycleEvent;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -19,20 +16,25 @@ import com.google.firebase.firestore.Query;
 import java.util.Date;
 import java.util.HashMap;
 
-import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
-import p.vikpo.chatapp.session.ImageViewModel;
+import p.vikpo.chatapp.session.FirebaseUserHandler;
+import p.vikpo.chatapp.session.FirebaseImageStorage;
+import p.vikpo.chatapp.session.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.wrappers.MessageImageWrapper;
+import p.vikpo.chatapp.wrappers.MessageWrapper;
 
 
 /**
  * Adapter class for displaying messages when opening a chatroom.
  */
-public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, ChatroomViewHolder>
+public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrapper, ChatroomViewHolder>
 {
     private String userId;
     private FirebaseUserHandler mUserHandler;
     private Fragment parentFragment;
     private final int MESSAGE_IN_VIEW_TYPE  = 1;
     private final int MESSAGE_OUT_VIEW_TYPE = 2;
+    private final int MESSAGE_IN_IMAGE = 3;
+    private final int MESSAGE_OUT_IMAGE = 4;
     private final String TAG = "ChatApp - Chatroom Adapter";
 
     /**
@@ -41,16 +43,16 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
      * @param query firestore query referencing the document to be shown in the chat
      * @param userId userid of the current user
      */
-    public ChatroomAdapter(Query query, String userId, ImageViewModel imageViewModel, Fragment parentFramgent)
+    public ChatroomAdapter(Query query, String userId, AvatarViewModel avatarViewModel, Fragment parentFragment)
     {
         super(new FirestoreRecyclerOptions
-                .Builder<MessageWrapper>()
-                .setQuery(query, MessageWrapper.class)
+                .Builder<MessageImageWrapper>()
+                .setQuery(query, MessageImageWrapper.class)
                 .build());
-        this.userId = userId;
 
-        this.mUserHandler = new FirebaseUserHandler(imageViewModel);
-        this.parentFragment = parentFramgent;
+        this.userId = userId;
+        this.mUserHandler = new FirebaseUserHandler(avatarViewModel);
+        this.parentFragment = parentFragment;
     }
 
     /**
@@ -74,30 +76,29 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
 
     /**
      * When the ViewHolder is bound fill the ChatroomViewHolder-class with information for displaying.
-     * Furthermore it looks the avatar up in a ViewModel and if it does'nt exist it is downloaded.
+     * Furthermore it looks the avatar up in a ViewModel and if it doesn't exist it is downloaded.
      * @param holder the ViewHolder who's responsibility it is to show the information
      * @param position the position in the list
      * @param model the MessageWrapper containing the information to be displayed by the ViewHolder.
      */
     @Override
-    protected void onBindViewHolder(@NonNull ChatroomViewHolder holder, int position, @NonNull MessageWrapper model)
+    protected void onBindViewHolder(@NonNull ChatroomViewHolder holder, int position, @NonNull MessageImageWrapper model)
     {
-        holder.bind(model.getMessageUser(),
-                new Date(model.getMessageTimer()).toString(),
-                model.getMessageText());
+        setAvatar(model, holder);
 
-        LiveData<HashMap<String, Bitmap>> userAvatarMap = mUserHandler.getAvatarMap(
-                model.getMessageUserId(), model.getMessageAvatarUrl());
-
-        userAvatarMap.observe(parentFragment, new Observer<HashMap<String, Bitmap>>()
+        if(model.getMessageBitmapUrl() != null)
         {
-            @Override
-            public void onChanged(HashMap<String, Bitmap> stringBitmapHashMap)
-            {
-                Log.e(TAG, "Size: " + stringBitmapHashMap.size());
-                holder.bindAvatar(stringBitmapHashMap.get(model.getMessageUserId()));
-            }
-        });
+            holder.bind(model.getMessageUser(), new Date(model.getMessageTimer()).toString(), "");
+
+            FirebaseImageStorage imageStorage = new FirebaseImageStorage();
+            imageStorage.getImage(model.getMessageBitmapUrl(), holder::bindImage);
+        }
+        else
+        {
+            holder.bind(model.getMessageUser(),
+                    new Date(model.getMessageTimer()).toString(),
+                    model.getMessageText());
+        }
     }
 
     /**
@@ -114,6 +115,15 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
             return MESSAGE_OUT_VIEW_TYPE;
         }
 
+        if(getItem(position).getMessageBitmapUrl() != null)
+        {
+            if(getItem(position).getMessageUserId().equals(userId))
+            {
+                return MESSAGE_OUT_IMAGE;
+            }
+            return MESSAGE_IN_IMAGE;
+        }
+
         return MESSAGE_IN_VIEW_TYPE;
     }
 
@@ -125,5 +135,14 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageWrapper, Ch
     public void onError(FirebaseFirestoreException e)
     {
         Log.e(TAG, "Encountered Error", e);
+    }
+
+    private void setAvatar(MessageWrapper model, ChatroomViewHolder holder)
+    {
+        LiveData<HashMap<String, Bitmap>> userAvatarMap = mUserHandler.getAvatarMap(
+                model.getMessageUserId(), model.getMessageAvatarUrl());
+
+        userAvatarMap.observe(parentFragment, stringBitmapHashMap ->
+                holder.bindAvatar(stringBitmapHashMap.get(model.getMessageUserId())));
     }
 }

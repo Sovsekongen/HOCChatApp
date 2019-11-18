@@ -1,16 +1,19 @@
 package p.vikpo.chatapp.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.transition.Fade;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.comms.Login.FirebaseUserHandler;
-import p.vikpo.chatapp.session.ImageViewModel;
+import p.vikpo.chatapp.session.FirebaseUserHandler;
+import p.vikpo.chatapp.session.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.ui.fragments.ChatroomFragment;
 import p.vikpo.chatapp.ui.fragments.ChatroomListFragment;
 
 /**
@@ -21,7 +24,7 @@ public class ChatroomActivity extends AppCompatActivity
 {
     private static final String TAG = "ChatApp - Chatroom Activity";
     private FirebaseUserHandler mUserHandler;
-    private ImageViewModel imageViewModel;
+    private AvatarViewModel avatarViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,13 +33,11 @@ public class ChatroomActivity extends AppCompatActivity
         setTransition();
         setContentView(R.layout.activity_chat_room);
 
-        imageViewModel = ViewModelProviders.of(this).get(ImageViewModel.class);
-        mUserHandler = new FirebaseUserHandler(imageViewModel);
-        mUserHandler.loadAllAvatars();
+        avatarViewModel = ViewModelProviders.of(this).get(AvatarViewModel.class);
+        mUserHandler = new FirebaseUserHandler(avatarViewModel);
+        mUserHandler.addUserToDB();
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.ChatRoomFragmentContainer, ChatroomListFragment.newInstance());
-        fragmentTransaction.commit();
+        startFragment();
     }
 
     /**
@@ -55,5 +56,32 @@ public class ChatroomActivity extends AppCompatActivity
         super.onStart();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
+    private void startFragment()
+    {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        mUserHandler.loadAllAvatars();
+
+        if(getIntent().getStringExtra("chatroomName") != null)
+        {
+            Fragment chatFragment = ChatroomFragment.newInstance();
+            Bundle chatroomBundle = new Bundle();
+
+            chatroomBundle.putString("chatroomName", getIntent().getStringExtra("chatroomName"));
+            chatroomBundle.putParcelable("messageImage", getIntent().getParcelableExtra("messageImage"));
+
+            chatFragment.setArguments(chatroomBundle);
+
+            fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, chatFragment).commit();
+        }
+        else
+        {
+            fragmentTransaction.add(R.id.ChatRoomFragmentContainer, ChatroomListFragment.newInstance()).commit();
+        }
+    }
 }

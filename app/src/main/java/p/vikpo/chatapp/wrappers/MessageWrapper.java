@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.comms.chatroom;
+package p.vikpo.chatapp.wrappers;
 
 
 /**

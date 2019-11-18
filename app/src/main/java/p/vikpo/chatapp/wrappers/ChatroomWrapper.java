@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.comms.chatroomList;
+package p.vikpo.chatapp.wrappers;
 
 public class ChatroomWrapper
 {

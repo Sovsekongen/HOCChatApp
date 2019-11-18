@@ -1,11 +1,10 @@
-package p.vikpo.chatapp.comms.Login;
+package p.vikpo.chatapp.session;
 
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -13,8 +12,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import p.vikpo.chatapp.session.ImageViewModel;
+import p.vikpo.chatapp.session.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.wrappers.UserWrapper;
 
 /**
  * Class for handling the firebase user when logged in. Downloads avatars so that they are ready
@@ -26,7 +27,8 @@ public class FirebaseUserHandler
     private FirebaseAuth mAuth;
     private FirebaseFirestore mDatabase;
     private FirebaseUser mUser;
-    private ImageViewModel imageHolder;
+    private AvatarViewModel imageHolder;
+    private Map<String, UserWrapper> users;
 
     private static final String TAG = "ChatApp - FirebaseUserHandler";
     private static final String COLLECTION_USER = "users";
@@ -36,17 +38,18 @@ public class FirebaseUserHandler
      * Constructor initializing the different firebase components that are later used in the class
      * @param imageHolder the ViewModel that stores the bitmaps.
      */
-    public FirebaseUserHandler(ImageViewModel imageHolder)
+    public FirebaseUserHandler(AvatarViewModel imageHolder)
     {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
 
         this.imageHolder = imageHolder;
+        users = new HashMap<>();
     }
 
     /**
-     * No-arg constructor for instantiating in an activity where the ImageViewModel isnt needed.
+     * No-arg constructor for instantiating in an activity where the AvatarViewModel isnt needed.
      */
     public FirebaseUserHandler()
     {
@@ -106,7 +109,8 @@ public class FirebaseUserHandler
      */
     public void addUserToDB()
     {
-        UserWrapper newUser = new UserWrapper(mUser.getPhotoUrl().toString(), mUser.getUid());
+        UserWrapper newUser = new UserWrapper(mUser.getPhotoUrl().toString(), mUser.getUid(),
+                new HashMap<>(), new HashMap<>());
 
         Query query = mDatabase.collection(COLLECTION_USER).whereEqualTo(DOCUMENT_FIELD_USERID, newUser.getmUid());
 
@@ -115,7 +119,13 @@ public class FirebaseUserHandler
             if (task.isSuccessful() && task.getResult().isEmpty())
             {
                 mDatabase.collection(COLLECTION_USER).add(newUser);
+                users.put(mUser.getUid(), newUser);
             }
         });
+    }
+
+    public UserWrapper getCurrentUser()
+    {
+        return users.get(mUser.getUid());
     }
 }

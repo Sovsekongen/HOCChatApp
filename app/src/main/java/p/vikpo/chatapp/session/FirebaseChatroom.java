@@ -1,8 +1,5 @@
 package p.vikpo.chatapp.session;
 
-import android.util.Log;
-import android.widget.ImageView;
-
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -11,9 +8,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import p.vikpo.chatapp.comms.chatroom.ChatroomAdapter;
-import p.vikpo.chatapp.comms.chatroom.MessageWrapper;
-import p.vikpo.chatapp.comms.chatroomList.ChatroomListAdapter;
+import p.vikpo.chatapp.adapters.chatroom.ChatroomAdapter;
+import p.vikpo.chatapp.session.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.wrappers.MessageWrapper;
+import p.vikpo.chatapp.adapters.chatroomList.ChatroomListAdapter;
 
 /**
  * Class for handling communication with FirebaseFirestore. Handles the adapters and retrieving and
@@ -25,7 +23,7 @@ public class FirebaseChatroom
     private FirebaseUser mUser;
     private FirebaseFirestore mDatabase;
     private String document;
-    private ImageViewModel imageViewModel;
+    private AvatarViewModel avatarViewModel;
     private Fragment parentFragment;
     private static final String COLLECTION_CHATROOM= "chatrooms";
     private static final String DOCUMENT_SUFFIX = "Messages";
@@ -44,13 +42,13 @@ public class FirebaseChatroom
         mUser = mAuth.getCurrentUser();
     }
 
-    public FirebaseChatroom(String document, ImageViewModel imageViewModel, Fragment parentFragment)
+    public FirebaseChatroom(String document, AvatarViewModel avatarViewModel, Fragment parentFragment)
     {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
         this.document = document;
-        this.imageViewModel = imageViewModel;
+        this.avatarViewModel = avatarViewModel;
         this.parentFragment = parentFragment;
     }
 
@@ -74,6 +72,7 @@ public class FirebaseChatroom
     public void addMessage(MessageWrapper message)
     {
         mDatabase.collection(document + DOCUMENT_SUFFIX).add(message);
+        updateChatroomNew();
     }
 
     /**
@@ -81,7 +80,7 @@ public class FirebaseChatroom
      * update when the last message was received. Currently works really bad due to it not being for
      * each individual user - looking into adding a user specific DB-entry.
      */
-    public void updateChatroomNew()
+    private void updateChatroomNew()
     {
         DocumentReference docReference = mDatabase.collection(COLLECTION_CHATROOM)
                 .document(translateTitle(document));
@@ -112,7 +111,7 @@ public class FirebaseChatroom
                 .orderBy(DOCUMENT_FIELD_TIMER)
                 .limit(50);
 
-        return new ChatroomAdapter(query, mUser.getUid(), imageViewModel, parentFragment);
+        return new ChatroomAdapter(query, mUser.getUid(), avatarViewModel, parentFragment);
     }
 
     /**

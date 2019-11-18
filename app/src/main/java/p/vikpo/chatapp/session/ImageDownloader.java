@@ -47,7 +47,6 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
         Bitmap bitmap = null;
         try
         {
-            Log.e(TAG, "Downloading " + imageURL);
             // Download Image from URL
             InputStream input = new URL(imageURL).openStream();
             // Decode Bitmap
