@@ -17,5 +17,12 @@ public interface ChatroomContract
     {
         void unregister();
         void loadFragment(Intent launchIntent);
+        void loadFragment(String title);
+        void startCameraIntent();
+    }
+
+    interface PresenterList
+    {
+        void onDestroy();
     }
 }

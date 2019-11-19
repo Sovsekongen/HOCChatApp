@@ -28,7 +28,7 @@ import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomViewHolder;
 import p.vikpo.chatapp.views.activities.CameraActivity;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
 import p.vikpo.chatapp.entities.MessageWrapper;
-import p.vikpo.chatapp.interactors.FirebaseChatroom;
+import p.vikpo.chatapp.interactors.FirebaseChatroomInteractor;
 import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 
@@ -47,7 +47,7 @@ public class ChatroomFragment extends Fragment
     private RecyclerView recyclerView;
 
     private FirebaseUser mUser;
-    private FirebaseChatroom firebaseConn;
+    private FirebaseChatroomInteractor firebaseConn;
     private FirestoreRecyclerAdapter<MessageImageWrapper, ChatroomViewHolder> adapter;
     private AvatarViewModel avatarViewModel;
 
@@ -107,7 +107,7 @@ public class ChatroomFragment extends Fragment
     }
 
     /**
-     * Access the bundle which the ChatroomFragment was created with. Creates the proper FirebaseChatroom
+     * Access the bundle which the ChatroomFragment was created with. Creates the proper FirebaseChatroomInteractor
      * based on the document given.
      */
     private void getChatroomDocument()
@@ -120,7 +120,7 @@ public class ChatroomFragment extends Fragment
         }
 
         avatarViewModel = ViewModelProviders.of(getActivity()).get(AvatarViewModel.class);
-        firebaseConn = new FirebaseChatroom(document, avatarViewModel, this);
+        firebaseConn = new FirebaseChatroomInteractor(document, avatarViewModel, this);
     }
 
     /**

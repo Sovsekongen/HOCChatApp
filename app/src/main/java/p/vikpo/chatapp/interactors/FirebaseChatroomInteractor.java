@@ -17,7 +17,7 @@ import p.vikpo.chatapp.presenters.chatroom.adapters.chatroomList.ChatroomListAda
  * Class for handling communication with FirebaseFirestore. Handles the adapters and retrieving and
  * updating information in the database.
  */
-public class FirebaseChatroom
+public class FirebaseChatroomInteractor
 {
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
@@ -35,14 +35,14 @@ public class FirebaseChatroom
     /**
      * No-arg construtor for initializing the class.
      */
-    public FirebaseChatroom()
+    public FirebaseChatroomInteractor()
     {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
     }
 
-    public FirebaseChatroom(String document, AvatarViewModel avatarViewModel, Fragment parentFragment)
+    public FirebaseChatroomInteractor(String document, AvatarViewModel avatarViewModel, Fragment parentFragment)
     {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
@@ -57,7 +57,7 @@ public class FirebaseChatroom
      * messages.
      * @param document the MessageDocument for which the class is initialized.
      */
-    public FirebaseChatroom(String document)
+    public FirebaseChatroomInteractor(String document)
     {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
