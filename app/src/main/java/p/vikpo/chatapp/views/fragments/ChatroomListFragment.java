@@ -17,9 +17,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.interactors.FirebaseUserHandler;
-import p.vikpo.chatapp.presentors.adapters.chatroomList.ChatroomListAdapter;
-import p.vikpo.chatapp.presentors.adapters.chatroomList.ChatroomListViewHolder;
+import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
+import p.vikpo.chatapp.presenters.adapters.chatroomList.ChatroomListAdapter;
+import p.vikpo.chatapp.presenters.adapters.chatroomList.ChatroomListViewHolder;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.entities.ChatroomWrapper;
 import p.vikpo.chatapp.interactors.FirebaseChatroom;
@@ -34,7 +34,7 @@ public class ChatroomListFragment extends Fragment
     private SwipeRefreshLayout pullToRefresh;
     private FirestoreRecyclerAdapter<ChatroomWrapper, ChatroomListViewHolder> adapter;
     private FirebaseChatroom firebaseChatroom;
-    private FirebaseUserHandler firebaseUserHandler;
+    private FirebaseUserInteractor firebaseUserInteractor;
     private AvatarViewModel avatarViewModel;
 
     public static ChatroomListFragment newInstance()
@@ -53,8 +53,8 @@ public class ChatroomListFragment extends Fragment
         addListener();
 
         avatarViewModel = ViewModelProviders.of(this).get(AvatarViewModel.class);
-        firebaseUserHandler = new FirebaseUserHandler(avatarViewModel);
-        firebaseUserHandler.addUserToDB();
+        firebaseUserInteractor = new FirebaseUserInteractor(avatarViewModel);
+        firebaseUserInteractor.addUserToDB();
 
         return v;
     }

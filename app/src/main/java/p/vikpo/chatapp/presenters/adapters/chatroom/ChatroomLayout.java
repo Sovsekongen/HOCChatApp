@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.presentors.adapters.chatroom;
+package p.vikpo.chatapp.presenters.adapters.chatroom;
 
 import android.content.Context;
 import android.graphics.Bitmap;

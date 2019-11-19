@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.presentors.adapters.chatroom;
+package p.vikpo.chatapp.presenters.adapters.chatroom;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -16,7 +16,7 @@ import com.google.firebase.firestore.Query;
 import java.util.Date;
 import java.util.HashMap;
 
-import p.vikpo.chatapp.interactors.FirebaseUserHandler;
+import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
 import p.vikpo.chatapp.entities.MessageWrapper;
@@ -28,7 +28,7 @@ import p.vikpo.chatapp.entities.MessageWrapper;
 public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrapper, ChatroomViewHolder>
 {
     private String userId;
-    private FirebaseUserHandler mUserHandler;
+    private FirebaseUserInteractor mUserHandler;
     private Fragment parentFragment;
     private final int MESSAGE_IN_VIEW_TYPE  = 1;
     private final int MESSAGE_OUT_VIEW_TYPE = 2;
@@ -50,7 +50,7 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
                 .build());
 
         this.userId = userId;
-        this.mUserHandler = new FirebaseUserHandler(avatarViewModel);
+        this.mUserHandler = new FirebaseUserInteractor(avatarViewModel);
         this.parentFragment = parentFragment;
     }
 

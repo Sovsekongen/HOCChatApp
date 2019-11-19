@@ -1,11 +1,7 @@
 package p.vikpo.chatapp.views.activities;
 
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.transition.Fade;
-import android.util.Log;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +11,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.interactors.FirebaseUserHandler;
+import p.vikpo.chatapp.presenters.MainPresenter;
 
 /**
  * Main activity for the app.
@@ -23,8 +19,7 @@ import p.vikpo.chatapp.interactors.FirebaseUserHandler;
 public class MainActivity extends AppCompatActivity
 {
     private static final String TAG = "ChatApp - MainActivity";
-    private final Handler delayHandler = new Handler();
-    private FirebaseUserHandler mUserHandler;
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,7 +31,14 @@ public class MainActivity extends AppCompatActivity
 
         initBackend();
 
-        isLoggedIn();
+        presenter.isLoggedIn();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        presenter.onDestroy();
+        super.onDestroy();
     }
 
     /**
@@ -48,37 +50,7 @@ public class MainActivity extends AppCompatActivity
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
 
-        mUserHandler = new FirebaseUserHandler();
-    }
-
-    private void startNewActivity(Intent intent)
-    {
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-    }
-
-    /**
-     * Checks whether the user is logged in by accessing the FirebaseUserHandler class.
-     */
-    private void isLoggedIn()
-    {
-        if (mUserHandler.isUserLoggedIn())
-        {
-            Log.e(TAG, "Is logged In");
-            load(new Intent(this, ChatroomActivity.class));
-        }
-        else
-        {
-            Log.e(TAG, "Is not logged In");
-            load(new Intent(this, LoginActivity.class));
-        }
-    }
-
-    /**
-     * Basic delay just for the sake of it
-     */
-    private void load(Intent intent)
-    {
-        delayHandler.postDelayed(() -> startNewActivity(intent), 2000);
+        presenter = new MainPresenter(this);
     }
 
     /**

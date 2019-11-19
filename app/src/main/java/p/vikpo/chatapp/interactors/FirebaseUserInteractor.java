@@ -14,6 +14,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.HashMap;
 import java.util.Map;
 
+import p.vikpo.chatapp.contracts.MainContract;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.entities.UserWrapper;
 
@@ -22,7 +23,7 @@ import p.vikpo.chatapp.entities.UserWrapper;
  * for being used in the chats. Uses a viewmodel to store bitmaps between fragments.
  * Handles checking whether or not the user is logged in.
  */
-public class FirebaseUserHandler
+public class FirebaseUserInteractor implements MainContract.Interactor
 {
     private FirebaseAuth mAuth;
     private FirebaseFirestore mDatabase;
@@ -30,7 +31,9 @@ public class FirebaseUserHandler
     private AvatarViewModel imageHolder;
     private Map<String, UserWrapper> users;
 
-    private static final String TAG = "ChatApp - FirebaseUserHandler";
+    private MainContract.InteractorOutput output;
+
+    private static final String TAG = "ChatApp - FirebaseUserInteractor";
     private static final String COLLECTION_USER = "users";
     private static final String DOCUMENT_FIELD_USERID = "mUid";
 
@@ -38,11 +41,12 @@ public class FirebaseUserHandler
      * Constructor initializing the different firebase components that are later used in the class
      * @param imageHolder the ViewModel that stores the bitmaps.
      */
-    public FirebaseUserHandler(AvatarViewModel imageHolder)
+    public FirebaseUserInteractor(AvatarViewModel imageHolder)
     {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
+        this.output = output;
 
         this.imageHolder = imageHolder;
         users = new HashMap<>();
@@ -51,11 +55,12 @@ public class FirebaseUserHandler
     /**
      * No-arg constructor for instantiating in an activity where the AvatarViewModel isnt needed.
      */
-    public FirebaseUserHandler()
+    public FirebaseUserInteractor(MainContract.InteractorOutput output)
     {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
+        this.output = output;
     }
 
     /**
@@ -127,5 +132,11 @@ public class FirebaseUserHandler
     public UserWrapper getCurrentUser()
     {
         return users.get(mUser.getUid());
+    }
+
+    @Override
+    public void unregister()
+    {
+        output = null;
     }
 }

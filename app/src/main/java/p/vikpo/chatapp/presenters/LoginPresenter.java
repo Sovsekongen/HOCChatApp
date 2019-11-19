@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.presentors;
+package p.vikpo.chatapp.presenters;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,9 +18,9 @@ import p.vikpo.chatapp.interactors.Login.FacebookInteractor;
 import p.vikpo.chatapp.interactors.Login.GoogleInteractor;
 import p.vikpo.chatapp.routers.LoginRouter;
 
-public class LoginPresentor implements LoginContract.Presentor, LoginContract.InteractorOutput
+public class LoginPresenter implements LoginContract.Presentor, LoginContract.InteractorOutput
 {
-    private static final String TAG = "ChatApp - LoginPresentor";
+    private static final String TAG = "ChatApp - LoginPresenter";
 
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
@@ -30,8 +30,9 @@ public class LoginPresentor implements LoginContract.Presentor, LoginContract.In
     private LoginRouter loginRouter;
     private GoogleInteractor googleInteractor;
     private FacebookInteractor facebookInteractor;
+    private LoginContract.View view;
 
-    public LoginPresentor(Activity activity)
+    public LoginPresenter(Activity activity, LoginContract.View view)
     {
         googleInteractor = new GoogleInteractor(this);
         facebookInteractor = new FacebookInteractor(activity, this);
@@ -47,6 +48,7 @@ public class LoginPresentor implements LoginContract.Presentor, LoginContract.In
                 .build();
 
         this.mGoogleSignInClient = GoogleSignIn.getClient(activity, gso);
+        this.view = view;
     }
 
     @Override
@@ -59,6 +61,7 @@ public class LoginPresentor implements LoginContract.Presentor, LoginContract.In
         facebookInteractor = null;
         googleInteractor.unregister();
         googleInteractor = null;
+        view = null;
 
         mGoogleSignInClient = null;
     }
@@ -66,12 +69,13 @@ public class LoginPresentor implements LoginContract.Presentor, LoginContract.In
     @Override
     public FacebookCallback<LoginResult> onFacebookLoginPressed()
     {
-        return facebookInteractor.getFacebookCallback();
+        return facebookInteractor.getFacebookCallback(view);
     }
 
     @Override
     public void onGoogleLoginPressed()
     {
+        view.showProgressBar();
         loginRouter.signInGoogle(mGoogleSignInClient);
     }
 
@@ -88,12 +92,14 @@ public class LoginPresentor implements LoginContract.Presentor, LoginContract.In
     @Override
     public void onLoginSuccess()
     {
+        view.hideProgressBar();
         loginRouter.startChatroom();
     }
 
     @Override
     public void onLoginError(String error)
     {
+        view.hideProgressBar();
         loginRouter.startLogin();
         Log.e(TAG, error);
         Toast.makeText(activity, "Unable to sign in. Please try again later.", Toast.LENGTH_SHORT).show();

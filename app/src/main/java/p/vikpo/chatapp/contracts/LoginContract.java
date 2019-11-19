@@ -6,6 +6,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
 public interface LoginContract
 {
+    interface View
+    {
+        void showProgressBar();
+        void hideProgressBar();
+    }
+
     interface Presentor
     {
         void onDestroy();

@@ -27,6 +27,7 @@ public class FacebookInteractor implements LoginContract.Interactor
     public FacebookInteractor(Activity activity, LoginContract.InteractorOutput output)
     {
         loginRouter = new LoginRouter(activity);
+        mAuth = FirebaseAuth.getInstance();
         this.activity = activity;
         this.output = output;
     }
@@ -51,6 +52,7 @@ public class FacebookInteractor implements LoginContract.Interactor
         {
             if (task.isSuccessful())
             {
+                Log.e(TAG, "Task is Successful");
                 output.onLoginSuccess();
             }
             else
@@ -65,7 +67,7 @@ public class FacebookInteractor implements LoginContract.Interactor
      * if the process is cancelled or encountered an error the function will start the LoginActivity again.
      * @return a new facebookCallback for the facebook login button.
      */
-    public FacebookCallback<LoginResult> getFacebookCallback()
+    public FacebookCallback<LoginResult> getFacebookCallback(LoginContract.View view)
     {
         return new FacebookCallback<LoginResult>()
         {
@@ -77,6 +79,7 @@ public class FacebookInteractor implements LoginContract.Interactor
             @Override
             public void onSuccess(LoginResult loginResult)
             {
+                view.showProgressBar();
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 

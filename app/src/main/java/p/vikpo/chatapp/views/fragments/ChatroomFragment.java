@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.presentors.adapters.chatroom.ChatroomViewHolder;
+import p.vikpo.chatapp.presenters.adapters.chatroom.ChatroomViewHolder;
 import p.vikpo.chatapp.views.activities.CameraActivity;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
 import p.vikpo.chatapp.entities.MessageWrapper;

@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.interactors.FirebaseUserHandler;
+import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.views.fragments.ChatroomFragment;
 import p.vikpo.chatapp.views.fragments.ChatroomListFragment;
@@ -23,7 +23,7 @@ import p.vikpo.chatapp.views.fragments.ChatroomListFragment;
 public class ChatroomActivity extends AppCompatActivity
 {
     private static final String TAG = "ChatApp - Chatroom Activity";
-    private FirebaseUserHandler mUserHandler;
+    private FirebaseUserInteractor mUserHandler;
     private AvatarViewModel avatarViewModel;
 
     @Override
@@ -34,7 +34,7 @@ public class ChatroomActivity extends AppCompatActivity
         setContentView(R.layout.activity_chat_room);
 
         avatarViewModel = ViewModelProviders.of(this).get(AvatarViewModel.class);
-        mUserHandler = new FirebaseUserHandler(avatarViewModel);
+        mUserHandler = new FirebaseUserInteractor(avatarViewModel);
         mUserHandler.addUserToDB();
 
         startFragment();
