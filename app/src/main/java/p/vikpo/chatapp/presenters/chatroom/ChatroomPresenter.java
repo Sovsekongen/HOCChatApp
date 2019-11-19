@@ -33,6 +33,13 @@ public class ChatroomPresenter
 
     private static final String IMAGE_LOCATION = "images/";
 
+    /**
+     * Constructor instansiating the needed resources for maintaining this class.
+     * @param activity parent activity
+     * @param view interface for accessing ChatroomFragments methods
+     * @param chatroomName name of the chatroom that needs to be opened
+     * @param parent parent fragment
+     */
     public ChatroomPresenter(AppCompatActivity activity, ChatroomContract.ChatroomView view, String chatroomName, Fragment parent)
     {
         firebaseChatroomInteractor = new FirebaseChatroomInteractor(
@@ -45,14 +52,23 @@ public class ChatroomPresenter
 
         this.view = view;
         this.parent = parent;
+
+        onBackButton();
     }
 
+    /**
+     * Method for accessing the adapter made for this specific chatroom
+     * @return the new adapter for populating the view.
+     */
     public ChatroomAdapter getAdapter()
     {
         return firebaseChatroomInteractor.getChatroomMessageAdapter();
     }
 
-    public void onBackButton()
+    /**
+     * Handles what happens whenever the user clicks the BackButton inside the specific chatrooms
+     */
+    private void onBackButton()
     {
         router.onBackCallback(parent);
     }
@@ -85,6 +101,10 @@ public class ChatroomPresenter
         }
     };
 
+    /**
+     * handles what happens when the camera floating action buttons is clicked.
+     * Starts the camera intent which handles returning the image to be sent.
+     */
     public View.OnClickListener cameraButtonOnClick = new View.OnClickListener()
     {
         @Override
@@ -105,6 +125,7 @@ public class ChatroomPresenter
         FirebaseStorageInteractor imageStorage = new FirebaseStorageInteractor();
 
         imageStorage.uploadImage(IMAGE_LOCATION + imageTitle, data.getParcelableExtra("messageImage"));
+        
         firebaseChatroomInteractor.addMessage(
                 new MessageImageWrapper(mUser.getDisplayName(),
                         view.getInputBox(),

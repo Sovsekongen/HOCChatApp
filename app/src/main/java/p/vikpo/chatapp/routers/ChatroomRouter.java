@@ -64,18 +64,13 @@ public class ChatroomRouter implements ChatroomContract.RouterActivity
         /*
          * Initializes variables needed for handling the transaction to the given chatroom.
          */
-        FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
-        FirebaseChatroomInteractor firebaseChatroomInteractor = new FirebaseChatroomInteractor(title);
         Fragment chatFragment = ChatroomFragment.newInstance();
         Bundle chatroomBundle = new Bundle();
 
         chatroomBundle.putString("chatroomName", title);
-        firebaseChatroomInteractor.updateChatroomSeen();
         chatFragment.setArguments(chatroomBundle);
 
-        fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, chatFragment)
-                .addToBackStack("listFragment")
-                .commit();
+        startFragment(chatFragment);
     }
 
     @Override
@@ -97,12 +92,18 @@ public class ChatroomRouter implements ChatroomContract.RouterActivity
             @Override
             public void handleOnBackPressed()
             {
-                FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, ChatroomListFragment.newInstance())
-                        .commit();
+                startFragment(ChatroomListFragment.newInstance());
             }
         };
 
         activity.getOnBackPressedDispatcher().addCallback(fragment, callback);
+    }
+
+    private void startFragment(Fragment fragment)
+    {
+        FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, fragment)
+                .addToBackStack("listFragment")
+                .commit();
     }
 }
