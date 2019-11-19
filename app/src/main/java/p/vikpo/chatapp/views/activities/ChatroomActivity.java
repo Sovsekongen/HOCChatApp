@@ -6,15 +6,9 @@ import android.transition.Fade;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
-import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
-import p.vikpo.chatapp.views.fragments.ChatroomFragment;
-import p.vikpo.chatapp.views.fragments.ChatroomListFragment;
+import p.vikpo.chatapp.presenters.chatroom.ChatroomActivityPresenter;
 
 /**
  * This class handles the ChatroomActivity and contains an UI-container for fragments,
@@ -23,9 +17,13 @@ import p.vikpo.chatapp.views.fragments.ChatroomListFragment;
 public class ChatroomActivity extends AppCompatActivity
 {
     private static final String TAG = "ChatApp - Chatroom Activity";
-    private FirebaseUserInteractor mUserHandler;
-    private AvatarViewModel avatarViewModel;
+    private ChatroomActivityPresenter presenter;
 
+    /**
+     * Implement start loading avatars. Remove the ViewModel or make it work better - is not currently
+     * working as intented.
+     * @param savedInstanceState .
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -33,11 +31,14 @@ public class ChatroomActivity extends AppCompatActivity
         setTransition();
         setContentView(R.layout.activity_chat_room);
 
-        avatarViewModel = ViewModelProviders.of(this).get(AvatarViewModel.class);
-        mUserHandler = new FirebaseUserInteractor(avatarViewModel);
-        mUserHandler.addUserToDB();
+        presenter = new ChatroomActivityPresenter(this);
+        presenter.startFragment(getIntent());
+    }
 
-        startFragment();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -51,37 +52,9 @@ public class ChatroomActivity extends AppCompatActivity
     }
 
     @Override
-    public void onStart()
+    protected void onDestroy()
     {
-        super.onStart();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void startFragment()
-    {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        mUserHandler.loadAllAvatars();
-
-        if(getIntent().getStringExtra("chatroomName") != null)
-        {
-            Fragment chatFragment = ChatroomFragment.newInstance();
-            Bundle chatroomBundle = new Bundle();
-
-            chatroomBundle.putString("chatroomName", getIntent().getStringExtra("chatroomName"));
-            chatroomBundle.putParcelable("messageImage", getIntent().getParcelableExtra("messageImage"));
-
-            chatFragment.setArguments(chatroomBundle);
-
-            fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, chatFragment).commit();
-        }
-        else
-        {
-            fragmentTransaction.add(R.id.ChatRoomFragmentContainer, ChatroomListFragment.newInstance()).commit();
-        }
+        presenter.onDestroy();
+        super.onDestroy();
     }
 }
