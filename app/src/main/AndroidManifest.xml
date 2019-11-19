@@ -19,7 +19,7 @@
             android:value="false"/>
 
 
-        <activity android:name=".ui.activities.MainActivity" android:theme="@style/AppTheme.Dark">
+        <activity android:name=".views.activities.MainActivity" android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,9 +42,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activities.LoginActivity" android:parentActivityName=".ui.activities.MainActivity" android:theme="@style/AppTheme.Dark"/>
-        <activity android:name=".ui.activities.ChatroomActivity" android:theme="@style/AppTheme.Dark"/>
-        <activity android:name=".ui.activities.CameraActivity" android:parentActivityName=".ui.activities.ChatroomActivity"/>
+        <activity android:name=".views.activities.LoginActivity" android:parentActivityName=".views.activities.MainActivity" android:theme="@style/AppTheme.Dark"/>
+        <activity android:name=".views.activities.ChatroomActivity" android:theme="@style/AppTheme.Dark"/>
+        <activity android:name=".views.activities.CameraActivity" android:parentActivityName=".views.activities.ChatroomActivity"/>
 
     </application>
 
