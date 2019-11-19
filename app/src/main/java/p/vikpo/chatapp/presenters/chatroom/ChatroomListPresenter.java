@@ -21,16 +21,14 @@ public class ChatroomListPresenter implements ChatroomContract.PresenterList
     public ChatroomListAdapter getAdapter()
     {
         return firebaseChatroomInteractor.getChatroomListAdapter(item ->
-                {
-                    firebaseChatroomInteractor.updateChatroomSeen();
-                    router.loadFragment(item.getTitle().getText().toString());
-                });
-
+                router.loadFragment(item.getTitle().getText().toString()));
     }
 
     @Override
     public void onDestroy()
     {
-
+        router.unregister();
+        router = null;
+        firebaseChatroomInteractor = null;
     }
 }

@@ -2,13 +2,17 @@ package p.vikpo.chatapp.interactors;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+
+import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 
 public class FirebaseStorageInteractor
 {
@@ -20,7 +24,6 @@ public class FirebaseStorageInteractor
     private FirebaseStorage storage;
     private StorageReference imageRef;
     private static final long ONE_MEGABYTE = 1024 * 1024;
-
 
     private static final String TAG = "ChatApp - FirebaseStorageInteractor";
 
@@ -36,8 +39,6 @@ public class FirebaseStorageInteractor
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
-
-
         UploadTask uploadTask = imageRef.putBytes(data);
         uploadTask.addOnFailureListener(exception -> Log.e(TAG, "Encountered Error", exception))
                 .addOnSuccessListener(taskSnapshot -> Log.e(TAG, "Uploaded Image " + title));
@@ -46,13 +47,15 @@ public class FirebaseStorageInteractor
     public void getImage(String title, OnDownloadResult onDownloadResult)
     {
         imageRef = storage.getReference(title);
-
         imageRef.getBytes(ONE_MEGABYTE)
                 .addOnSuccessListener(bytes ->
-                        {
-                            onDownloadResult.downloadResult(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                        })
+                        onDownloadResult.downloadResult(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)))
                 .addOnFailureListener(exception ->
-                        Log.e(TAG, "Encountered Error While Downloading Image", exception));
+                        {
+                            Log.e(TAG, "Encountered Error While Downloading Image", exception);
+                            Handler handler = new Handler();
+                            handler.postDelayed(() -> getImage(title, onDownloadResult), 200);
+                        });
+
     }
 }

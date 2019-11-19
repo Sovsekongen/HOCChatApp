@@ -53,6 +53,8 @@ public class ChatroomPresenter
         this.view = view;
         this.parent = parent;
 
+        firebaseChatroomInteractor.updateChatroomSeen();
+
         onBackButton();
     }
 
@@ -86,7 +88,6 @@ public class ChatroomPresenter
 
             if(TextUtils.isEmpty(message))
             {
-
                 return;
             }
 
@@ -125,7 +126,7 @@ public class ChatroomPresenter
         FirebaseStorageInteractor imageStorage = new FirebaseStorageInteractor();
 
         imageStorage.uploadImage(IMAGE_LOCATION + imageTitle, data.getParcelableExtra("messageImage"));
-        
+
         firebaseChatroomInteractor.addMessage(
                 new MessageImageWrapper(mUser.getDisplayName(),
                         view.getInputBox(),

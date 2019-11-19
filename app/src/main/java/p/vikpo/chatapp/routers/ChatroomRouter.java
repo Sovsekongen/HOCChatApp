@@ -10,7 +10,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.contracts.ChatroomContract;
-import p.vikpo.chatapp.interactors.FirebaseChatroomInteractor;
 import p.vikpo.chatapp.views.activities.CameraActivity;
 import p.vikpo.chatapp.views.fragments.ChatroomFragment;
 import p.vikpo.chatapp.views.fragments.ChatroomListFragment;
