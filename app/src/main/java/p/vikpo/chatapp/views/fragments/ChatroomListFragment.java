@@ -18,8 +18,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
-import p.vikpo.chatapp.presenters.adapters.chatroomList.ChatroomListAdapter;
-import p.vikpo.chatapp.presenters.adapters.chatroomList.ChatroomListViewHolder;
+import p.vikpo.chatapp.presenters.chatroom.adapters.chatroomList.ChatroomListAdapter;
+import p.vikpo.chatapp.presenters.chatroom.adapters.chatroomList.ChatroomListViewHolder;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.entities.ChatroomWrapper;
 import p.vikpo.chatapp.interactors.FirebaseChatroom;
@@ -54,7 +54,6 @@ public class ChatroomListFragment extends Fragment
 
         avatarViewModel = ViewModelProviders.of(this).get(AvatarViewModel.class);
         firebaseUserInteractor = new FirebaseUserInteractor(avatarViewModel);
-        firebaseUserInteractor.addUserToDB();
 
         return v;
     }

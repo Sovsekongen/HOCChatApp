@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.presenters.adapters.chatroomList;
+package p.vikpo.chatapp.presenters.chatroom.adapters.chatroomList;
 
 import android.content.Context;
 import android.graphics.Color;

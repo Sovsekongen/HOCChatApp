@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.presenters.adapters.chatroom;
+package p.vikpo.chatapp.presenters.chatroom.adapters.chatroom;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -136,7 +136,7 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
     private void setAvatar(MessageWrapper model, ChatroomViewHolder holder)
     {
         LiveData<HashMap<String, Bitmap>> userAvatarMap = mUserHandler.getAvatarMap(
-                model.getMessageUserId(), model.getMessageAvatarUrl());
+                model.getMessageUserId());
 
         userAvatarMap.observe(parentFragment, stringBitmapHashMap ->
                 holder.bindAvatar(stringBitmapHashMap.get(model.getMessageUserId())));

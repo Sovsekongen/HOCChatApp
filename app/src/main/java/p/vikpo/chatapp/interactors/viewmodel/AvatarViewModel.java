@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.HashMap;
 
-import p.vikpo.chatapp.interactors.ImageDownloader;
+import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
 
 /**
  * ViewModel for storing the bitmaps for the avatars. Loads them before a chatroom is opened.
@@ -16,27 +16,30 @@ import p.vikpo.chatapp.interactors.ImageDownloader;
 public class AvatarViewModel extends ViewModel
 {
     private MutableLiveData<HashMap<String, Bitmap>> avatarMap;
+    private FirebaseStorageInteractor interactor;
     private static final String TAG = "ChatApp - AvatarViewModel";
+    private static final String IMAGE_PATH_USER = "user/";
 
     /**
-     * Possibly for instansiating the LiveData object storing the hashmap containing a key of the userId
+     * Instantiating the LiveData object storing the hashmap containing a key of the userId
      * and the value of the given bitmap.
+     * Possibly not a good idea to store in memory except if the app remains this small.
      * @param userId userId for the currently requested avatar bitmap
-     * @param userUrl userUrl for the currently requested avatar bitmap
      * @return a LiveData object containing a HashMap with key userId and value Bitmap
      */
-    public LiveData<HashMap<String, Bitmap>> getMap(String userId, String userUrl)
+    public LiveData<HashMap<String, Bitmap>> getMap(String userId)
     {
+        interactor = new FirebaseStorageInteractor();
         if(avatarMap == null)
         {
             avatarMap = new MutableLiveData<>();
             avatarMap.setValue(new HashMap<>());
-            downloadUserBitmap(userId, userUrl);
+            downloadUserBitmap(userId);
         }
 
         if(!avatarMap.getValue().containsKey(userId))
         {
-            downloadUserBitmap(userId, userUrl);
+            downloadUserBitmap(userId);
         }
 
         return avatarMap;
@@ -45,36 +48,33 @@ public class AvatarViewModel extends ViewModel
     /**
      * Driver function for accessing the download function for downloading a specific bitmap
      * @param userId userId for the currently requested avatar bitmap
-     * @param userUrl userUrl for the currently requested avatar bitmap
      */
-    public void addUser(String userId, String userUrl)
+    public void addUser(String userId)
     {
         if(avatarMap == null)
         {
-            getMap(userId, userUrl);
+            getMap(userId);
         }
 
         if(!avatarMap.getValue().containsKey(userId))
         {
-            downloadUserBitmap(userId, userUrl);
+            downloadUserBitmap(userId);
         }
     }
 
     /**
-     * Function that calls the asynctask class ImageDownloader that downloads the image.
+     * Functions that downloads the given AvatarBitmap from the Firestore-storage. Adds the image to
+     * the ViewModel-HashMap.
      * @param userId userId for the currently requested avatar bitmap
-     * @param userUrl userUrl for the currently requested avatar bitmap
      */
-    private void downloadUserBitmap(String userId, String userUrl)
+    private void downloadUserBitmap(String userId)
     {
         if(avatarMap != null)
         {
             if(!avatarMap.getValue().containsKey(userId))
             {
-                ImageDownloader imageDownloader = new ImageDownloader(result ->
+                interactor.getImage(IMAGE_PATH_USER + userId, result ->
                         avatarMap.getValue().put(userId, result));
-
-                imageDownloader.execute(userUrl);
             }
         }
     }

@@ -1,11 +1,11 @@
-package p.vikpo.chatapp.presenters.adapters.chatroom;
+package p.vikpo.chatapp.presenters.chatroom.adapters.chatroom;
 
 import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import p.vikpo.chatapp.interactors.FirebaseImageStorage;
+import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
 
 /**
  * ChatroomViewHolder for storing the ChatroomLayout view and handling binding of information.
@@ -56,7 +56,7 @@ public class ChatroomViewHolder extends RecyclerView.ViewHolder
 
     private void bindImage(String bitmapUrl)
     {
-        FirebaseImageStorage imageStorage = new FirebaseImageStorage();
+        FirebaseStorageInteractor imageStorage = new FirebaseStorageInteractor();
         imageStorage.getImage(IMAGE_LOCATION + bitmapUrl, chatroomLayout::setMessageImage);
     }
 }

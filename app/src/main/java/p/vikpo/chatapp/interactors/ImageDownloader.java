@@ -69,6 +69,8 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
     protected void onPostExecute(Bitmap result)
     {
         super.onPostExecute(result);
+
+        Log.e(TAG, "Downloaded Bitmap With the size of: "+ result.getByteCount());
         delegate.ProcessFinish(result);
     }
 }

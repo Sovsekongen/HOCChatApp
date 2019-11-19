@@ -23,7 +23,6 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
     private static final String TAG = "ChatApp - LoginPresenter";
 
     private GoogleSignInClient mGoogleSignInClient;
-    private GoogleSignInOptions gso;
     private CallbackManager callbackManager;
     private Activity activity;
 
@@ -32,6 +31,11 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
     private FacebookInteractor facebookInteractor;
     private LoginContract.View view;
 
+    /**
+     * Instantiating the presenter based on the View interface and the parent activity
+     * @param activity parent activity
+     * @param view interface determaining which functions can be called from the view class.
+     */
     public LoginPresenter(Activity activity, LoginContract.View view)
     {
         googleInteractor = new GoogleInteractor(this);
@@ -41,7 +45,7 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
         this.activity = activity;
 
         callbackManager = CallbackManager.Factory.create();
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(activity.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .requestProfile()
@@ -51,6 +55,9 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
         this.view = view;
     }
 
+    /**
+     * For de-allocating memory.
+     */
     @Override
     public void onDestroy()
     {
@@ -66,12 +73,19 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
         mGoogleSignInClient = null;
     }
 
+    /**
+     * Getting the FacebookCallback method from the FacebookInteractor
+     * @return FacebookCallback-function for handling possible click on the FB-login button
+     */
     @Override
     public FacebookCallback<LoginResult> onFacebookLoginPressed()
     {
         return facebookInteractor.getFacebookCallback(view);
     }
 
+    /**
+     * Handles click events on the Google-login button. Shows the progressbar.
+     */
     @Override
     public void onGoogleLoginPressed()
     {
@@ -79,16 +93,27 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
         loginRouter.signInGoogle(mGoogleSignInClient);
     }
 
+    /**
+     * Passing the Google onActivityResult method to the parents onActivityResult method.
+     * @param data the intent in the onActivityResult method.
+     */
     public void handleGoogleSignIn(Intent data)
     {
         googleInteractor.onActivityResult(data, activity);
     }
 
+    /**
+     * Callback manager for registering the Facebook-Callback to the facebook button.
+     * @return instance of the CallbackManager
+     */
     public CallbackManager getCallbackManager()
     {
         return callbackManager;
     }
 
+    /**
+     * Interface method for handling what to do when the login is successful.
+     */
     @Override
     public void onLoginSuccess()
     {
@@ -96,6 +121,11 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
         loginRouter.startChatroom();
     }
 
+    /**
+     * Interface method for handling what to do when the login has failed.
+     * Restarts the LoginActivity and shows a Toast with an error message.
+     * @param error The error passed to the function. The error gets logged.
+     */
     @Override
     public void onLoginError(String error)
     {

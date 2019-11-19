@@ -86,15 +86,14 @@ public class FacebookInteractor implements LoginContract.Interactor
             @Override
             public void onCancel()
             {
+                Toast.makeText(activity, "Login cancelled. Try again!", Toast.LENGTH_SHORT).show();
                 loginRouter.startLogin();
             }
 
             @Override
             public void onError(FacebookException error)
             {
-                loginRouter.startLogin();
-                Toast.makeText(activity, "Unable to login with facebook. ", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Encountered Error", error);
+                output.onLoginError(error.toString());
             }
         };
     }

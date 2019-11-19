@@ -10,7 +10,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 
-public class FirebaseImageStorage
+public class FirebaseStorageInteractor
 {
     public interface OnDownloadResult
     {
@@ -22,9 +22,9 @@ public class FirebaseImageStorage
     private static final long ONE_MEGABYTE = 1024 * 1024;
 
 
-    private static final String TAG = "ChatApp - FirebaseImageStorage";
+    private static final String TAG = "ChatApp - FirebaseStorageInteractor";
 
-    public FirebaseImageStorage()
+    public FirebaseStorageInteractor()
     {
         storage = FirebaseStorage.getInstance();
     }

@@ -24,12 +24,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.presenters.adapters.chatroom.ChatroomViewHolder;
+import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomViewHolder;
 import p.vikpo.chatapp.views.activities.CameraActivity;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
 import p.vikpo.chatapp.entities.MessageWrapper;
 import p.vikpo.chatapp.interactors.FirebaseChatroom;
-import p.vikpo.chatapp.interactors.FirebaseImageStorage;
+import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 
 /**
@@ -192,7 +192,7 @@ public class ChatroomFragment extends Fragment
         if (requestCode == REQUEST_RETURN_IMAGE)
         {
             String imageTitle = mUser.getUid() + System.currentTimeMillis();
-            FirebaseImageStorage imageStorage = new FirebaseImageStorage();
+            FirebaseStorageInteractor imageStorage = new FirebaseStorageInteractor();
 
             imageStorage.uploadImage(IMAGE_LOCATION + imageTitle, data.getParcelableExtra("messageImage"));
             firebaseConn.addMessage(
@@ -228,26 +228,4 @@ public class ChatroomFragment extends Fragment
             adapter.stopListening();
         }
     }
-/*
-    private void createNotificationChannel()
-    {
-        CharSequence name = getString(R.string.channel_name);
-        String description = getString(R.string.channel_description);
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-        channel.setDescription(description);
-        NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
-    }
-
-    public NotificationCompat.Builder buildNotification()
-    {
-        return new NotificationCompat.Builder(getContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_camera_alt_black_24dp)
-                .setContentTitle("My notification")
-                .setContentText("Much longer text that cannot fit one line...")
-                .setStyle(new NotificationCompat.BigTextStyle()
-                .bigText("Much longer text that cannot fit one line..."))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-    }*/
 }

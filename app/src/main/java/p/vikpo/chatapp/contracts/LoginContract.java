@@ -4,6 +4,10 @@ import com.facebook.FacebookCallback;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
+/**
+ * Contract for making sure the elements concerning the login-activity dosent leak memory and has the
+ * right functions.
+ */
 public interface LoginContract
 {
     interface View

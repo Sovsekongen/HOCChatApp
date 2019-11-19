@@ -8,10 +8,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import p.vikpo.chatapp.presenters.adapters.chatroom.ChatroomAdapter;
+import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomAdapter;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.entities.MessageWrapper;
-import p.vikpo.chatapp.presenters.adapters.chatroomList.ChatroomListAdapter;
+import p.vikpo.chatapp.presenters.chatroom.adapters.chatroomList.ChatroomListAdapter;
 
 /**
  * Class for handling communication with FirebaseFirestore. Handles the adapters and retrieving and

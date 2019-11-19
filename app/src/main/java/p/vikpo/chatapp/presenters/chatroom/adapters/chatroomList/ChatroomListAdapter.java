@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.presenters.adapters.chatroomList;
+package p.vikpo.chatapp.presenters.chatroom.adapters.chatroomList;
 
 import android.util.Log;
 import android.view.ViewGroup;

@@ -56,6 +56,12 @@ public class GoogleInteractor implements LoginContract.Interactor
         });
     }
 
+    /**
+     * Method being passed to the MainActivity class that handles what happends when the google
+     * sign-in intent gives a result.
+     * @param data the intent returned from the Google sign-in intent
+     * @param activity parent activity
+     */
     public void onActivityResult(Intent data, Activity activity)
     {
         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);

@@ -12,7 +12,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import p.vikpo.chatapp.contracts.MainContract;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
@@ -27,15 +26,16 @@ public class FirebaseUserInteractor implements MainContract.Interactor
 {
     private FirebaseAuth mAuth;
     private FirebaseFirestore mDatabase;
+    private FirebaseStorageInteractor mImageStorage;
     private FirebaseUser mUser;
     private AvatarViewModel imageHolder;
-    private Map<String, UserWrapper> users;
 
     private MainContract.InteractorOutput output;
 
     private static final String TAG = "ChatApp - FirebaseUserInteractor";
     private static final String COLLECTION_USER = "users";
     private static final String DOCUMENT_FIELD_USERID = "mUid";
+    private static final String IMAGE_PATH_USER = "user/";
 
     /**
      * Constructor initializing the different firebase components that are later used in the class
@@ -45,11 +45,10 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
+        mImageStorage = new FirebaseStorageInteractor();
         mUser = mAuth.getCurrentUser();
-        this.output = output;
 
         this.imageHolder = imageHolder;
-        users = new HashMap<>();
     }
 
     /**
@@ -60,6 +59,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
+        mImageStorage = new FirebaseStorageInteractor();
         this.output = output;
     }
 
@@ -75,12 +75,11 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     /**
      * Returns the map-containing all the bitmaps with corresponding userids
      * @param userId the userId for the currently requested avatar bitmap
-     * @param userUrl the URL for the current requested avatar bitmap
      * @return a LiveData object containing a reference to the hashmap with the bitmaps.
      */
-    public LiveData<HashMap<String, Bitmap>> getAvatarMap(String userId, String userUrl)
+    public LiveData<HashMap<String, Bitmap>> getAvatarMap(String userId)
     {
-        return imageHolder.getMap(userId, userUrl);
+        return imageHolder.getMap(userId);
     }
 
     /**
@@ -98,7 +97,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
             {
                 for(QueryDocumentSnapshot document : task.getResult())
                 {
-                    imageHolder.addUser(document.get("mUid").toString(), document.get("mUrl").toString());
+                    imageHolder.addUser(document.get("mUid").toString());
                 }
             }
             else
@@ -124,14 +123,13 @@ public class FirebaseUserInteractor implements MainContract.Interactor
             if (task.isSuccessful() && task.getResult().isEmpty())
             {
                 mDatabase.collection(COLLECTION_USER).add(newUser);
-                users.put(mUser.getUid(), newUser);
+
+                ImageDownloader imageDownloader = new ImageDownloader(result ->
+                        mImageStorage.uploadImage(IMAGE_PATH_USER + mUser.getUid(), result));
+
+                imageDownloader.execute(mUser.getPhotoUrl().toString());
             }
         });
-    }
-
-    public UserWrapper getCurrentUser()
-    {
-        return users.get(mUser.getUid());
     }
 
     @Override
