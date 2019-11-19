@@ -51,9 +51,8 @@ public class ChatroomListFragment extends Fragment
             pullToRefresh.setRefreshing(false);
         });
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         chatroomView.setHasFixedSize(true);
-        chatroomView.setLayoutManager(layoutManager);
+        chatroomView.setLayoutManager(new LinearLayoutManager(getContext()));
         chatroomView.setAdapter(adapter);
 
         return v;

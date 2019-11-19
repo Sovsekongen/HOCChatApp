@@ -35,12 +35,6 @@ public class ChatroomActivity extends AppCompatActivity
         presenter.startFragment(getIntent());
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     /**
      * Adds the transition between the last activity and possibly this.
      */
@@ -56,5 +50,11 @@ public class ChatroomActivity extends AppCompatActivity
     {
         presenter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

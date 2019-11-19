@@ -69,6 +69,7 @@ public class CameraActivity extends AppCompatActivity
 
         if(resultCode == RESULT_OK)
         {
+            Log.e(TAG, "Result OK.");
             if(requestCode == REQUEST_IMAGE_CHOOSE)
             {
                 try
@@ -90,7 +91,6 @@ public class CameraActivity extends AppCompatActivity
             if(requestCode == REQUEST_IMAGE_CAPTURE)
             {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
-
                 setResultBitmap(photo);
             }
         }
@@ -119,6 +119,7 @@ public class CameraActivity extends AppCompatActivity
      */
     private void setResultBitmap(Bitmap bitmap)
     {
+        Log.e(TAG, "Sending Back Bitmap with size: " + bitmap.getByteCount());
         Intent resultIntent = new Intent();
         resultIntent.putExtra("messageImage", bitmap);
 

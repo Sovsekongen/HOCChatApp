@@ -1,5 +1,116 @@
 package p.vikpo.chatapp.presenters.chatroom;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import p.vikpo.chatapp.contracts.ChatroomContract;
+import p.vikpo.chatapp.entities.MessageImageWrapper;
+import p.vikpo.chatapp.entities.MessageWrapper;
+import p.vikpo.chatapp.interactors.FirebaseChatroomInteractor;
+import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
+import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomAdapter;
+import p.vikpo.chatapp.routers.ChatroomRouter;
+
 public class ChatroomPresenter
 {
+    private FirebaseChatroomInteractor firebaseChatroomInteractor;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+    private ChatroomRouter router;
+    private ChatroomContract.ChatroomView view;
+    private Fragment parent;
+
+    private static final String IMAGE_LOCATION = "images/";
+
+    public ChatroomPresenter(AppCompatActivity activity, ChatroomContract.ChatroomView view, String chatroomName, Fragment parent)
+    {
+        firebaseChatroomInteractor = new FirebaseChatroomInteractor(
+                chatroomName,
+                ViewModelProviders.of(activity).get(AvatarViewModel.class),
+                parent);
+        router = new ChatroomRouter(activity);
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+
+        this.view = view;
+        this.parent = parent;
+    }
+
+    public ChatroomAdapter getAdapter()
+    {
+        return firebaseChatroomInteractor.getChatroomMessageAdapter();
+    }
+
+    public void onBackButton()
+    {
+        router.onBackCallback(parent);
+    }
+
+    /**
+     * Handles on click for the send button. If the input is empty prompt the user with a "is empty"-toast
+     * If it isn't empty send a message to the firebase database.
+     */
+    public View.OnClickListener sendButtonOnClick = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            String message = view.getInputBox();
+
+            if(TextUtils.isEmpty(message))
+            {
+
+                return;
+            }
+
+            firebaseChatroomInteractor.addMessage(
+                    new MessageWrapper(mUser.getDisplayName(),
+                    message,
+                    mUser.getUid(),
+                    System.currentTimeMillis(),
+                    mUser.getPhotoUrl().toString()));
+
+            view.setInputBox("");
+        }
+    };
+
+    public View.OnClickListener cameraButtonOnClick = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            router.startCameraIntent(parent);
+        }
+    };
+
+    /**
+     * Handles accessing information given from the camera activity. Takes the bitmap, uploads
+     * it to the FirestoreStorage and adds the message with the correct location in the FirestoreStorage
+     * @param data The intent containing the Bitmap taken from the CameraActivity.
+     */
+    public void sendImageMessage(Intent data)
+    {
+        String imageTitle = mUser.getUid() + System.currentTimeMillis();
+        FirebaseStorageInteractor imageStorage = new FirebaseStorageInteractor();
+
+        imageStorage.uploadImage(IMAGE_LOCATION + imageTitle, data.getParcelableExtra("messageImage"));
+        firebaseChatroomInteractor.addMessage(
+                new MessageImageWrapper(mUser.getDisplayName(),
+                        view.getInputBox(),
+                        mUser.getUid(),
+                        System.currentTimeMillis(),
+                        mUser.getPhotoUrl().toString(),
+                        imageTitle));
+    }
 }

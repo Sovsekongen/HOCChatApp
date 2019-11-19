@@ -3,6 +3,7 @@ package p.vikpo.chatapp.routers;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -10,11 +11,13 @@ import androidx.fragment.app.FragmentTransaction;
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.contracts.ChatroomContract;
 import p.vikpo.chatapp.interactors.FirebaseChatroomInteractor;
+import p.vikpo.chatapp.views.activities.CameraActivity;
 import p.vikpo.chatapp.views.fragments.ChatroomFragment;
 import p.vikpo.chatapp.views.fragments.ChatroomListFragment;
 
 public class ChatroomRouter implements ChatroomContract.RouterActivity
 {
+    private static final int REQUEST_RETURN_IMAGE = 2010;
     private AppCompatActivity activity;
 
     public ChatroomRouter(AppCompatActivity activity)
@@ -76,8 +79,30 @@ public class ChatroomRouter implements ChatroomContract.RouterActivity
     }
 
     @Override
-    public void startCameraIntent()
+    public void startCameraIntent(Fragment parent)
     {
+        Intent cameraIntent = new Intent(activity, CameraActivity.class);
+        parent.startActivityForResult(cameraIntent, REQUEST_RETURN_IMAGE);
+    }
 
+    /**
+     * Function for instantiating the function that handles the proper reaction when the back button
+     * is pressed in each chatroom.
+     */
+    @Override
+    public void onBackCallback(Fragment fragment)
+    {
+        OnBackPressedCallback callback = new OnBackPressedCallback(true)
+        {
+            @Override
+            public void handleOnBackPressed()
+            {
+                FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, ChatroomListFragment.newInstance())
+                        .commit();
+            }
+        };
+
+        activity.getOnBackPressedDispatcher().addCallback(fragment, callback);
     }
 }
