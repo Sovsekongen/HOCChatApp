@@ -10,23 +10,22 @@ import androidx.fragment.app.Fragment;
  */
 public interface ChatroomContract
 {
-    interface PresenterActivity
+    interface PresenterActivity extends Contract.Presenter
     {
-        void onDestroy();
+
     }
 
-    interface RouterActivity
+    interface RouterActivity extends Contract.Router
     {
-        void unregister();
         void loadFragment(Intent launchIntent);
         void loadFragment(String title);
         void startCameraIntent(Fragment parent);
         void onBackCallback(Fragment fragment);
     }
 
-    interface PresenterList
+    interface PresenterList extends Contract.Presenter
     {
-        void onDestroy();
+
     }
 
     interface ChatroomView

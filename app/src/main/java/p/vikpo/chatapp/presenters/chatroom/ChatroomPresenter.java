@@ -1,19 +1,15 @@
 package p.vikpo.chatapp.presenters.chatroom;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.Query;
 
 import p.vikpo.chatapp.contracts.ChatroomContract;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
@@ -21,17 +17,18 @@ import p.vikpo.chatapp.entities.MessageWrapper;
 import p.vikpo.chatapp.interactors.FirebaseChatroomInteractor;
 import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.presenters.NotificationPresenter;
 import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomAdapter;
 import p.vikpo.chatapp.routers.ChatroomRouter;
 
 public class ChatroomPresenter
 {
     private FirebaseChatroomInteractor firebaseChatroomInteractor;
-    private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private ChatroomRouter router;
     private ChatroomContract.ChatroomView view;
     private Fragment parent;
+    private NotificationPresenter notificationPresenter;
 
     private static final String IMAGE_LOCATION = "images/";
 
@@ -49,13 +46,14 @@ public class ChatroomPresenter
                 ViewModelProviders.of(activity).get(AvatarViewModel.class),
                 parent);
         router = new ChatroomRouter(activity);
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
         this.view = view;
         this.parent = parent;
 
         firebaseChatroomInteractor.updateChatroomSeen();
+        notificationPresenter = new NotificationPresenter(activity, chatroomName);
 
         onBackButton();
     }
@@ -92,6 +90,7 @@ public class ChatroomPresenter
         public void onClick(View v)
         {
             String message = view.getInputBox();
+            notificationPresenter.showNotification();
 
             if(TextUtils.isEmpty(message))
             {

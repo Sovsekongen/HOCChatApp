@@ -6,14 +6,14 @@ package p.vikpo.chatapp.contracts;
  */
 public interface MainContract
 {
-    interface Presentor
+    interface Presentor extends Contract.Presenter
     {
-        void onDestroy();
+
     }
 
-    interface Interactor
+    interface Interactor extends Contract.Interactor
     {
-        void unregister();
+
     }
 
     interface InteractorOutput
@@ -21,9 +21,8 @@ public interface MainContract
         void isLoggedIn();
     }
 
-    interface Router
+    interface Router extends Contract.Router
     {
-        void unregister();
         void startLogin();
         void startChat();
     }

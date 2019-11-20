@@ -1,17 +1,12 @@
 package p.vikpo.chatapp.interactors;
 
-import android.util.Log;
-
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import p.vikpo.chatapp.entities.MessageWrapper;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
@@ -37,7 +32,7 @@ public class FirebaseChatroomInteractor
     private static final String DOCUMENT_FIELD_NEW = "newMessage";
     private static final String DOCUMENT_FIELD_TIMER = "messageTimer";
     private static final String TAG = "ChatApp - Firebase Connection";
-    private static final int PAGE_LIMIT = 5;
+    private static final int PAGE_LIMIT = 50;
 
     /**
      * No-arg construtor for initializing the class.

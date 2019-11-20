@@ -16,16 +16,15 @@ public interface LoginContract
         void hideProgressBar();
     }
 
-    interface Presentor
+    interface Presentor extends Contract.Presenter
     {
-        void onDestroy();
         FacebookCallback<LoginResult> onFacebookLoginPressed();
         void onGoogleLoginPressed();
     }
 
-    interface Interactor
+    interface Interactor extends Contract.Interactor
     {
-        void unregister();
+
     }
 
     interface InteractorOutput
@@ -34,9 +33,8 @@ public interface LoginContract
         void onLoginError(String error);
     }
 
-    interface Router
+    interface Router extends Contract.Router
     {
-        void unregister();
         void startLogin();
         void startChatroom();
         void signInGoogle(GoogleSignInClient gsc);

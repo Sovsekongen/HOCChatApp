@@ -4,16 +4,15 @@ import android.graphics.Bitmap;
 
 public interface CameraContract
 {
-    interface Router
+    interface Router extends Contract.Router
     {
         void dispatchTakePictureIntent();
         void dispatchChoosePictureIntent();
         void setResultBitmap(Bitmap bitmap);
         void setResultCancel();
-        void unregister();
     }
 
-    interface Presenter
+    interface Presenter extends Contract.Presenter
     {
         void onDestroy();
     }
