@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.Query;
 
 import p.vikpo.chatapp.contracts.ChatroomContract;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
@@ -65,9 +66,12 @@ public class ChatroomPresenter
      */
     public ChatroomAdapter getAdapter()
     {
-        ChatroomAdapter adapter = firebaseChatroomInteractor.getChatroomMessageAdapter();
+        return firebaseChatroomInteractor.getChatroomMessageAdapter();
+    }
 
-        return adapter;
+    public void updateChatroomAdapter(ChatroomAdapter adapter)
+    {
+        firebaseChatroomInteractor.updateChatroomQuery(adapter);
     }
 
     /**

@@ -30,10 +30,7 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
     private String userId;
     private FirebaseUserInteractor mUserHandler;
     private Fragment parentFragment;
-    private final int MESSAGE_IN_VIEW_TYPE  = 1;
-    private final int MESSAGE_OUT_VIEW_TYPE = 2;
-    private final int MESSAGE_IN_IMAGE = 3;
-    private final int MESSAGE_OUT_IMAGE = 4;
+    private Query query;
     private final String TAG = "ChatApp - Chatroom Adapter";
 
     /**
@@ -52,6 +49,7 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
         this.userId = userId;
         this.mUserHandler = new FirebaseUserInteractor(avatarViewModel);
         this.parentFragment = parentFragment;
+        this.query = query;
     }
 
     /**
@@ -101,20 +99,17 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
         {
             if(getItem(position).getMessageUserId().equals(userId))
             {
-                return MESSAGE_OUT_IMAGE;
+                return 4;
             }
-            return MESSAGE_IN_IMAGE;
+            return 3;
         }
         else
         {
             if(getItem(position).getMessageUserId().equals(userId))
             {
-                return MESSAGE_OUT_VIEW_TYPE;
+                return 2;
             }
-            else
-            {
-                return MESSAGE_IN_VIEW_TYPE;
-            }
+            return 1;
         }
     }
 
@@ -140,5 +135,19 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
 
         userAvatarMap.observe(parentFragment, stringBitmapHashMap ->
                 holder.bindAvatar(stringBitmapHashMap.get(model.getMessageUserId())));
+    }
+
+    public void updateQuery(Query query)
+    {
+        Log.e(TAG, "Updating options with the new query.");
+        updateOptions(new FirestoreRecyclerOptions
+                .Builder<MessageImageWrapper>()
+                .setQuery(query, MessageImageWrapper.class)
+                .build());
+    }
+
+    public Query getQuery()
+    {
+        return query;
     }
 }

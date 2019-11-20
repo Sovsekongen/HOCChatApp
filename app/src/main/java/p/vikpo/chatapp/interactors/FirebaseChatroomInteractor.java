@@ -1,12 +1,17 @@
 package p.vikpo.chatapp.interactors;
 
+import android.util.Log;
+
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import p.vikpo.chatapp.entities.MessageWrapper;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
@@ -25,12 +30,14 @@ public class FirebaseChatroomInteractor
     private String document;
     private AvatarViewModel avatarViewModel;
     private Fragment parentFragment;
+
     private static final String COLLECTION_CHATROOM = "chatrooms";
     private static final String DOCUMENT_SUFFIX = "Messages";
     private static final String DOCUMENT_FIELD_LAST = "lastMessage";
     private static final String DOCUMENT_FIELD_NEW = "newMessage";
     private static final String DOCUMENT_FIELD_TIMER = "messageTimer";
     private static final String TAG = "ChatApp - Firebase Connection";
+    private static final int PAGE_LIMIT = 5;
 
     /**
      * No-arg construtor for initializing the class.
@@ -107,11 +114,30 @@ public class FirebaseChatroomInteractor
      */
     public ChatroomAdapter getChatroomMessageAdapter()
     {
+        ChatroomAdapter adapter;
         Query query = mDatabase.collection(document + DOCUMENT_SUFFIX)
                 .orderBy(DOCUMENT_FIELD_TIMER, Query.Direction.DESCENDING)
-                .limit(50);
+                .limit(PAGE_LIMIT);
 
-        return new ChatroomAdapter(query, mUser.getUid(), avatarViewModel, parentFragment);
+        adapter = new ChatroomAdapter(query, mUser.getUid(), avatarViewModel, parentFragment);
+
+        return adapter;
+    }
+
+    /**
+     * Updates the query when the limit of the recyclerview is reached. The new query will load PAGE_LIMIT
+     * extra messages each time the function is called.
+     * @param adapter the adapter that needs to be updated.
+     */
+    public void updateChatroomQuery(ChatroomAdapter adapter)
+    {
+        adapter.getQuery().get().addOnSuccessListener(documentSnapshots ->
+        {
+            Query next = mDatabase.collection(document + DOCUMENT_SUFFIX)
+                    .orderBy(DOCUMENT_FIELD_TIMER, Query.Direction.DESCENDING)
+                    .limit(PAGE_LIMIT * ((documentSnapshots.size() / PAGE_LIMIT) + 1));
+            adapter.updateQuery(next);
+        });
     }
 
     /**
