@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -64,7 +65,9 @@ public class ChatroomPresenter
      */
     public ChatroomAdapter getAdapter()
     {
-        return firebaseChatroomInteractor.getChatroomMessageAdapter();
+        ChatroomAdapter adapter = firebaseChatroomInteractor.getChatroomMessageAdapter();
+
+        return adapter;
     }
 
     /**

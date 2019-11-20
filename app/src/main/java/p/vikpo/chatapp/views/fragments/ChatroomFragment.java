@@ -2,7 +2,6 @@ package p.vikpo.chatapp.views.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,30 +9,21 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.contracts.ChatroomContract;
 import p.vikpo.chatapp.presenters.chatroom.ChatroomPresenter;
 import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomViewHolder;
-import p.vikpo.chatapp.views.activities.CameraActivity;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
-import p.vikpo.chatapp.entities.MessageWrapper;
-import p.vikpo.chatapp.interactors.FirebaseChatroomInteractor;
-import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
-import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 
 /**
  * Fragment for containing each individual fragment - currently only supports a single chatroom.
@@ -44,6 +34,7 @@ public class ChatroomFragment extends Fragment implements ChatroomContract.Chatr
     private static final int REQUEST_RETURN_IMAGE = 2010;
 
     private EditText inputBox;
+    private SwipeRefreshLayout refreshLayout;
     private FirestoreRecyclerAdapter<MessageImageWrapper, ChatroomViewHolder> adapter;
     private ChatroomPresenter presenter;
 
@@ -55,7 +46,7 @@ public class ChatroomFragment extends Fragment implements ChatroomContract.Chatr
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.fragment_chat_room, container, false);
+        View v = inflater.inflate(R.layout.fragment_chatroom, container, false);
 
         presenter = new ChatroomPresenter(
                 (AppCompatActivity) getActivity(),
@@ -66,15 +57,39 @@ public class ChatroomFragment extends Fragment implements ChatroomContract.Chatr
         adapter = presenter.getAdapter();
 
         RecyclerView recyclerView = v.findViewById(R.id.chatroom_recycler);
+        refreshLayout = v.findViewById(R.id.chatroom_swipe_view);
         inputBox = v.findViewById(R.id.chatroom_inputbox);
+
         FloatingActionButton sendButton = v.findViewById(R.id.chatroom_message_fab);
         FloatingActionButton activateCameraButton = v.findViewById(R.id.chatroom_camera_fab);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        manager.setReverseLayout(true);
+        manager.setStackFromEnd(true);
 
         sendButton.setOnClickListener(presenter.sendButtonOnClick);
         activateCameraButton.setOnClickListener(presenter.cameraButtonOnClick);
+
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver()
+        {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount)
+            {
+                recyclerView.smoothScrollToPosition(0);
+            }
+        });
+
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
+
+        recyclerView.addOnLayoutChangeListener((v1, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+        {
+            if(bottom < oldBottom)
+            {
+                recyclerView.postDelayed(() -> recyclerView.smoothScrollToPosition(0), 100);
+            }
+        });
+
+        refreshLayout.setRefreshing(false);
 
         return v;
     }
@@ -137,6 +152,12 @@ public class ChatroomFragment extends Fragment implements ChatroomContract.Chatr
     public void setInputBox(String text)
     {
         inputBox.setText(text);
+    }
+
+    @Override
+    public void setRefresh(boolean val)
+    {
+        refreshLayout.setRefreshing(val);
     }
 
     @Override

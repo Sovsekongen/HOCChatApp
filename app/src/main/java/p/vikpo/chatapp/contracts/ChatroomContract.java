@@ -32,6 +32,7 @@ public interface ChatroomContract
     interface ChatroomView
     {
         void setInputBox(String text);
+        void setRefresh(boolean val);
         String getInputBox();
     }
 }

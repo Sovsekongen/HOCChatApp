@@ -44,7 +44,7 @@ public class ChatroomListFragment extends Fragment
         adapter = presenter.getAdapter();
 
         RecyclerView chatroomView = v.findViewById(R.id.chatroom_view);
-        pullToRefresh = v.findViewById(R.id.chatroom_swipe_view);
+        pullToRefresh = v.findViewById(R.id.chatroom_list_swipe_view);
         pullToRefresh.setOnRefreshListener(() ->
         {
             adapter.notifyDataSetChanged();

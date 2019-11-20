@@ -16,10 +16,10 @@ import com.google.firebase.firestore.Query;
 import java.util.Date;
 import java.util.HashMap;
 
-import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
-import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
 import p.vikpo.chatapp.entities.MessageWrapper;
+import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
+import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 
 
 /**
@@ -123,7 +123,7 @@ public class ChatroomAdapter extends FirestoreRecyclerAdapter<MessageImageWrappe
      * @param e the FirebaseFirestoreException to be printed.
      */
     @Override
-    public void onError(FirebaseFirestoreException e)
+    public void onError(@NonNull FirebaseFirestoreException e)
     {
         Log.e(TAG, "Encountered Error", e);
     }

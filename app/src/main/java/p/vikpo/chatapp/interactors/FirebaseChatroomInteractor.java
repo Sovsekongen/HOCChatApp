@@ -8,9 +8,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomAdapter;
-import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.entities.MessageWrapper;
+import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
+import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomAdapter;
 import p.vikpo.chatapp.presenters.chatroom.adapters.chatroomList.ChatroomListAdapter;
 
 /**
@@ -108,7 +108,7 @@ public class FirebaseChatroomInteractor
     public ChatroomAdapter getChatroomMessageAdapter()
     {
         Query query = mDatabase.collection(document + DOCUMENT_SUFFIX)
-                .orderBy(DOCUMENT_FIELD_TIMER)
+                .orderBy(DOCUMENT_FIELD_TIMER, Query.Direction.DESCENDING)
                 .limit(50);
 
         return new ChatroomAdapter(query, mUser.getUid(), avatarViewModel, parentFragment);
@@ -148,5 +148,4 @@ public class FirebaseChatroomInteractor
                 return document;
         }
     }
-
 }
