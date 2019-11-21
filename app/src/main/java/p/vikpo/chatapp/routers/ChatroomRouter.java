@@ -1,9 +1,12 @@
 package p.vikpo.chatapp.routers;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -72,6 +75,10 @@ public class ChatroomRouter implements ChatroomContract.RouterActivity
         startFragment(chatFragment);
     }
 
+    /**
+     * Starts the camera intent that returns a bitmap of the taken image.
+     * @param parent the parent fragment
+     */
     @Override
     public void startCameraIntent(Fragment parent)
     {
@@ -98,11 +105,32 @@ public class ChatroomRouter implements ChatroomContract.RouterActivity
         activity.getOnBackPressedDispatcher().addCallback(fragment, callback);
     }
 
+    /**
+     * Starts the given Fragment. This is used for opening the different chatrooms.
+     * @param fragment the fragment that should be opened.
+     */
     private void startFragment(Fragment fragment)
     {
         FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, fragment)
                 .addToBackStack("listFragment")
                 .commit();
+    }
+
+    /**
+     * Method for creating a dialog. This dialog is used for handling updates of user permissions.
+     * @param okButton a listener for what should happen when the OK-button has been clicked.
+     * @param cancelButton a listener for what should happen when the cancel-button has been clicked.
+     * @return a new AlertDialog ready for being shown.
+     */
+    public AlertDialog showChoiceDialog(DialogInterface.OnClickListener okButton, DialogInterface.OnClickListener cancelButton)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_AppCompat_Dialog_Alert);
+        builder.setMessage(R.string.permission_dialog_text)
+                .setTitle(R.string.permission_dialog_title)
+                .setPositiveButton(R.string.permission_dialog_ok_button, okButton)
+                .setNegativeButton(R.string.permission_dialog_cancel_button, cancelButton);
+
+        return builder.create();
     }
 }

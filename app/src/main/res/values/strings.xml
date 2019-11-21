@@ -14,4 +14,9 @@
     <string name="dialog_cancel_button">Cancel</string>
 
     <string name="default_notification_channel_id">ChatAppNotificationId</string>
+
+    <string name="permission_dialog_title">Notifications</string>
+    <string name="permission_dialog_text">Do you want to receive notifications for this chatroom?</string>
+    <string name="permission_dialog_ok_button">Yes</string>
+    <string name="permission_dialog_cancel_button">No</string>
 </resources>

@@ -33,10 +33,9 @@ public class ChatroomActivityPresenter implements ChatroomContract.PresenterActi
      */
     public void startFragment(Intent launchIntent)
     {
-        mUserHandler.addUserToDB();
+        mUserHandler.initUser();
         router.loadFragment(launchIntent);
         mUserHandler.loadAllAvatars();
-        mUserHandler.getUserToken();
     }
 
     /**

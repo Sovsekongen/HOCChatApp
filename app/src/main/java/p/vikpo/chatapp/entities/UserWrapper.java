@@ -1,11 +1,17 @@
 package p.vikpo.chatapp.entities;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class UserWrapper
 {
     private String mUrl, mUid, mMessageToken;
-    private Map<String, Boolean> mHasPermission;
+    private HashMap<String, Boolean> mHasPermission;
+
+    public UserWrapper()
+    {
+
+    }
 
     public UserWrapper(String mName, String mUid)
     {
@@ -13,12 +19,19 @@ public class UserWrapper
         this.mUid = mUid;
     }
 
-    public UserWrapper(String mUrl, String mUid, Map<String, Boolean> mHasPermission, String mMessageToken)
+    public UserWrapper(String mUrl, String mUid, HashMap<String, Boolean> mHasPermission, String mMessageToken)
     {
         this.mUrl = mUrl;
         this.mUid = mUid;
         this.mHasPermission = mHasPermission;
         this.mMessageToken = mMessageToken;
+    }
+
+    public UserWrapper(String mUrl, String mUid, HashMap<String, Boolean> mHasPermission)
+    {
+        this.mUrl = mUrl;
+        this.mUid = mUid;
+        this.mHasPermission = mHasPermission;
     }
 
     public String getmUrl()
@@ -41,12 +54,12 @@ public class UserWrapper
         this.mUid = mUid;
     }
 
-    public Map<String, Boolean> getmHasPermission()
+    public HashMap<String, Boolean> getmHasPermission()
     {
         return mHasPermission;
     }
 
-    public void setmHasPermission(Map<String, Boolean> mHasPermission)
+    public void setmHasPermission(HashMap<String, Boolean> mHasPermission)
     {
         this.mHasPermission = mHasPermission;
     }

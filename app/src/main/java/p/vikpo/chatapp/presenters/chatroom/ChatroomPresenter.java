@@ -16,20 +16,20 @@ import p.vikpo.chatapp.entities.MessageImageWrapper;
 import p.vikpo.chatapp.entities.MessageWrapper;
 import p.vikpo.chatapp.interactors.FirebaseChatroomInteractor;
 import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
+import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
-import p.vikpo.chatapp.presenters.NotificationPresenter;
 import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomAdapter;
 import p.vikpo.chatapp.routers.ChatroomRouter;
 
 public class ChatroomPresenter
 {
     private FirebaseChatroomInteractor firebaseChatroomInteractor;
+    private FirebaseUserInteractor firebaseUserInteractor;
     private FirebaseUser mUser;
     private ChatroomRouter router;
     private ChatroomContract.ChatroomView view;
     private Fragment parent;
-    private NotificationPresenter notificationPresenter;
-
+    private String chatroomName;
     private static final String IMAGE_LOCATION = "images/";
 
     /**
@@ -51,9 +51,11 @@ public class ChatroomPresenter
 
         this.view = view;
         this.parent = parent;
+        this.chatroomName = chatroomName;
 
         firebaseChatroomInteractor.updateChatroomSeen();
-        //notificationPresenter = new NotificationPresenter(activity, chatroomName);
+        firebaseUserInteractor = new FirebaseUserInteractor();
+        firebaseUserInteractor.initUser();
 
         onBackButton();
     }
@@ -89,6 +91,7 @@ public class ChatroomPresenter
         @Override
         public void onClick(View v)
         {
+            updatePermission();
             String message = view.getInputBox();
             //notificationPresenter.showNotification();
 
@@ -128,6 +131,7 @@ public class ChatroomPresenter
      */
     public void sendImageMessage(Intent data)
     {
+        updatePermission();
         String imageTitle = mUser.getUid() + System.currentTimeMillis();
         FirebaseStorageInteractor imageStorage = new FirebaseStorageInteractor();
 
@@ -140,5 +144,21 @@ public class ChatroomPresenter
                         System.currentTimeMillis(),
                         mUser.getPhotoUrl().toString(),
                         imageTitle));
+    }
+
+    /**
+     * Launches a dialog if the user haven't set their preferences for notifications. If the user
+     * has not set their preferences update the preferences for the user.
+     */
+    private void updatePermission()
+    {
+        if(firebaseUserInteractor.hasPermission(chatroomName) == 2)
+        {
+            router.showChoiceDialog(
+                    (dialog, which) ->
+                        firebaseUserInteractor.updateUserPermission(chatroomName, true),
+                    (dialog, which) ->
+                        firebaseUserInteractor.updateUserPermission(chatroomName, false)).show();
+        }
     }
 }
