@@ -27,6 +27,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     private FirebaseAuth mAuth;
     private FirebaseFirestore mDatabase;
     private FirebaseStorageInteractor mImageStorage;
+    private FirebaseMessageInteractor messageInteractor;
     private FirebaseUser mUser;
     private AvatarViewModel imageHolder;
     private UserWrapper currentUser;
@@ -49,6 +50,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         mImageStorage = new FirebaseStorageInteractor();
+        messageInteractor = new FirebaseMessageInteractor();
         mUser = mAuth.getCurrentUser();
 
         this.imageHolder = imageHolder;
@@ -63,6 +65,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
         mImageStorage = new FirebaseStorageInteractor();
+        messageInteractor = new FirebaseMessageInteractor();
         this.output = output;
     }
 
@@ -72,6 +75,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
         mDatabase = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
         mImageStorage = new FirebaseStorageInteractor();
+        messageInteractor = new FirebaseMessageInteractor();
     }
 
     /**
@@ -149,6 +153,8 @@ public class FirebaseUserInteractor implements MainContract.Interactor
                 currentUser = task.getResult().getDocuments().get(0).toObject(UserWrapper.class);
             }
         });
+
+        messageInteractor.subscribeToTopics(currentUser.getmHasPermission());
     }
 
     /**

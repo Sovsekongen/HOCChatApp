@@ -30,6 +30,9 @@ public class NotificationInteractor implements NotificationContract.Interactor
         this.activity = activity;
     }
 
+    /**
+     * Initiates the notification channel ID.
+     */
     public void initChannel()
     {
         if(notificationManager.getNotificationChannel(CHANNEL_ID) == null)
@@ -44,6 +47,11 @@ public class NotificationInteractor implements NotificationContract.Interactor
         }
     }
 
+    /**
+     * Shows a notification in the app. Only local.
+     * @param intent the pending intent for what should happend when the notification is clicked.
+     * @param document the document that should be opened and from which there is a new message.
+     */
     public void showNotification(PendingIntent intent, String document)
     {
         Notification notification = new NotificationCompat.Builder(activity, CHANNEL_ID)

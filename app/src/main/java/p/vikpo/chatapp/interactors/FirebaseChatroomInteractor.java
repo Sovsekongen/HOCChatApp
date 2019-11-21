@@ -88,18 +88,6 @@ public class FirebaseChatroomInteractor
                 .document(translateTitle(document));
 
         docReference.update(DOCUMENT_FIELD_LAST, System.currentTimeMillis());
-        docReference.update(DOCUMENT_FIELD_NEW, true);
-    }
-
-    /**
-     * When the chatroom has been opened make it appear as seen. Same critiques as above.
-     */
-    public void updateChatroomSeen()
-    {
-        DocumentReference docReference = mDatabase.collection(COLLECTION_CHATROOM)
-                .document(translateTitle(document));
-
-        docReference.update(DOCUMENT_FIELD_NEW, false);
     }
 
     /**

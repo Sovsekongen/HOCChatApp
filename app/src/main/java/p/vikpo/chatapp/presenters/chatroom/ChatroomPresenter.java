@@ -53,7 +53,6 @@ public class ChatroomPresenter
         this.parent = parent;
         this.chatroomName = chatroomName;
 
-        firebaseChatroomInteractor.updateChatroomSeen();
         firebaseUserInteractor = new FirebaseUserInteractor();
         firebaseUserInteractor.initUser();
 
@@ -69,6 +68,10 @@ public class ChatroomPresenter
         return firebaseChatroomInteractor.getChatroomMessageAdapter();
     }
 
+    /**
+     * Updates the given chatroom adapter with a new Query.
+     * @param adapter the adapter to be updated
+     */
     public void updateChatroomAdapter(ChatroomAdapter adapter)
     {
         firebaseChatroomInteractor.updateChatroomQuery(adapter);
@@ -93,7 +96,6 @@ public class ChatroomPresenter
         {
             updatePermission();
             String message = view.getInputBox();
-            //notificationPresenter.showNotification();
 
             if(TextUtils.isEmpty(message))
             {
