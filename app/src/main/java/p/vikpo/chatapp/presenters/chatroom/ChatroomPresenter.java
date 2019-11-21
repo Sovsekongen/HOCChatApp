@@ -53,7 +53,7 @@ public class ChatroomPresenter
         this.parent = parent;
 
         firebaseChatroomInteractor.updateChatroomSeen();
-        notificationPresenter = new NotificationPresenter(activity, chatroomName);
+        //notificationPresenter = new NotificationPresenter(activity, chatroomName);
 
         onBackButton();
     }
@@ -90,7 +90,7 @@ public class ChatroomPresenter
         public void onClick(View v)
         {
             String message = view.getInputBox();
-            notificationPresenter.showNotification();
+            //notificationPresenter.showNotification();
 
             if(TextUtils.isEmpty(message))
             {

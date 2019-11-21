@@ -7,6 +7,8 @@ import android.content.Intent;
 import p.vikpo.chatapp.contracts.NotificationContract;
 import p.vikpo.chatapp.views.activities.ChatroomActivity;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+
 public class NotificationRouter implements NotificationContract.Router
 {
     private static final String CHATROOM_NAME = "chatroomName";
@@ -20,8 +22,9 @@ public class NotificationRouter implements NotificationContract.Router
     public PendingIntent getChatroomIntent(String document)
     {
         Intent launchIntent = new Intent(activity, ChatroomActivity.class);
+        launchIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
         launchIntent.putExtra(CHATROOM_NAME, document);
-        return PendingIntent.getActivity(activity, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(activity, 0, launchIntent, PendingIntent.FLAG_ONE_SHOT);
     }
 
     @Override

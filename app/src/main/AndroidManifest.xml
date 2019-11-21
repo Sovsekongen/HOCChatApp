@@ -46,9 +46,27 @@
         <activity android:name=".views.activities.ChatroomActivity" android:theme="@style/AppTheme.Dark"/>
         <activity android:name=".views.activities.CameraActivity" android:parentActivityName=".views.activities.ChatroomActivity"/>
 
-    </application>
+            <service
+                android:name=".interactors.FirebaseMessageInteractor"
+                android:exported="false">
+                <intent-filter>
+                    <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                </intent-filter>
+            </service>
 
-    <!-- Permissions -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_chevron_right_black_24dp" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+        </application>
+
+        <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>

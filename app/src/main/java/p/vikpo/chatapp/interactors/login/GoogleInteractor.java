@@ -1,4 +1,4 @@
-package p.vikpo.chatapp.interactors.Login;
+package p.vikpo.chatapp.interactors.login;
 
 import android.app.Activity;
 import android.content.Intent;

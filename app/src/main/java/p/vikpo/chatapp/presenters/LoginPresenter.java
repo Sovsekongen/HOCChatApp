@@ -14,8 +14,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.contracts.LoginContract;
-import p.vikpo.chatapp.interactors.Login.FacebookInteractor;
-import p.vikpo.chatapp.interactors.Login.GoogleInteractor;
+import p.vikpo.chatapp.interactors.login.FacebookInteractor;
+import p.vikpo.chatapp.interactors.login.GoogleInteractor;
 import p.vikpo.chatapp.routers.LoginRouter;
 
 public class LoginPresenter implements LoginContract.Presentor, LoginContract.InteractorOutput

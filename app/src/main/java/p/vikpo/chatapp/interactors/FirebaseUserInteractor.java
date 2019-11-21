@@ -10,12 +10,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
 import p.vikpo.chatapp.contracts.MainContract;
-import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 import p.vikpo.chatapp.entities.UserWrapper;
+import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 
 /**
  * Class for handling the firebase user when logged in. Downloads avatars so that they are ready
@@ -35,6 +36,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     private static final String TAG = "ChatApp - FirebaseUserInteractor";
     private static final String COLLECTION_USER = "users";
     private static final String DOCUMENT_FIELD_USERID = "mUid";
+    private static final String DOCUMENT_FIELD_TOKEN = "mMessageToken";
     private static final String IMAGE_PATH_USER = "user/";
 
     /**
@@ -52,7 +54,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     }
 
     /**
-     * No-arg constructor for instantiating in an activity where the AvatarViewModel isnt needed.
+     *
      */
     public FirebaseUserInteractor(MainContract.InteractorOutput output)
     {
@@ -61,6 +63,14 @@ public class FirebaseUserInteractor implements MainContract.Interactor
         mUser = mAuth.getCurrentUser();
         mImageStorage = new FirebaseStorageInteractor();
         this.output = output;
+    }
+
+    public FirebaseUserInteractor()
+    {
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseFirestore.getInstance();
+        mUser = mAuth.getCurrentUser();
+        mImageStorage = new FirebaseStorageInteractor();
     }
 
     /**
@@ -114,7 +124,7 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     public void addUserToDB()
     {
         UserWrapper newUser = new UserWrapper(mUser.getPhotoUrl().toString(), mUser.getUid(),
-                new HashMap<>());
+                new HashMap<>(), "");
 
         Query query = mDatabase.collection(COLLECTION_USER).whereEqualTo(DOCUMENT_FIELD_USERID, newUser.getmUid());
 
@@ -130,6 +140,26 @@ public class FirebaseUserInteractor implements MainContract.Interactor
                 imageDownloader.execute(mUser.getPhotoUrl().toString());
             }
         });
+    }
+
+    public void getUserToken()
+    {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task ->
+        {
+            if(!task.isSuccessful())
+            {
+                Log.w(TAG, "Getting id", task.getException());
+            }
+            addTokenToUser(task.getResult().getToken());
+        });
+    }
+
+    private void addTokenToUser(String token)
+    {
+        Query query = mDatabase.collection(COLLECTION_USER).whereEqualTo(DOCUMENT_FIELD_USERID, mUser.getUid());
+
+        query.get().addOnCompleteListener(task ->
+                mDatabase.collection(COLLECTION_USER).document(task.getResult().getDocuments().get(0).getId()).update(DOCUMENT_FIELD_TOKEN, token));
     }
 
     @Override

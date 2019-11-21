@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class UserWrapper
 {
-    private String mUrl, mUid;
+    private String mUrl, mUid, mMessageToken;
     private Map<String, Boolean> mHasPermission;
 
     public UserWrapper(String mName, String mUid)
@@ -13,11 +13,12 @@ public class UserWrapper
         this.mUid = mUid;
     }
 
-    public UserWrapper(String mUrl, String mUid, Map<String, Boolean> mHasPermissionn)
+    public UserWrapper(String mUrl, String mUid, Map<String, Boolean> mHasPermission, String mMessageToken)
     {
         this.mUrl = mUrl;
         this.mUid = mUid;
         this.mHasPermission = mHasPermission;
+        this.mMessageToken = mMessageToken;
     }
 
     public String getmUrl()
@@ -48,5 +49,15 @@ public class UserWrapper
     public void setmHasPermission(Map<String, Boolean> mHasPermission)
     {
         this.mHasPermission = mHasPermission;
+    }
+
+    public String getmMessageToken()
+    {
+        return mMessageToken;
+    }
+
+    public void setmMessageToken(String mMessageToken)
+    {
+        this.mMessageToken = mMessageToken;
     }
 }
