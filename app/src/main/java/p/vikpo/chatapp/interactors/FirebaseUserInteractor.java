@@ -1,5 +1,6 @@
 package p.vikpo.chatapp.interactors;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -31,8 +32,6 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     private FirebaseUser mUser;
     private AvatarViewModel imageHolder;
     private UserWrapper currentUser;
-
-    private MainContract.InteractorOutput output;
 
     private static final String TAG = "ChatApp - FirebaseUserInteractor";
     private static final String COLLECTION_USER = "users";
@@ -66,7 +65,6 @@ public class FirebaseUserInteractor implements MainContract.Interactor
         mUser = mAuth.getCurrentUser();
         mImageStorage = new FirebaseStorageInteractor();
         messageInteractor = new FirebaseMessageInteractor();
-        this.output = output;
     }
 
     public FirebaseUserInteractor()
@@ -147,14 +145,15 @@ public class FirebaseUserInteractor implements MainContract.Interactor
                         mImageStorage.uploadImage(IMAGE_PATH_USER + mUser.getUid(), result));
 
                 imageDownloader.execute(mUser.getPhotoUrl().toString());
+
+                messageInteractor.subscribeToTopics(currentUser.getmHasPermission());
             }
             else
             {
                 currentUser = task.getResult().getDocuments().get(0).toObject(UserWrapper.class);
+                messageInteractor.subscribeToTopics(currentUser.getmHasPermission());
             }
         });
-
-        messageInteractor.subscribeToTopics(currentUser.getmHasPermission());
     }
 
     /**
@@ -229,6 +228,5 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     @Override
     public void unregister()
     {
-        output = null;
     }
 }

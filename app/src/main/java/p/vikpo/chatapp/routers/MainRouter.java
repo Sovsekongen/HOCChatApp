@@ -28,17 +28,27 @@ public class MainRouter implements MainContract.Router
     }
 
     @Override
-    public void startLogin()
+    public void startLogin(String intent)
     {
-        Log.e(TAG, "Is not logged In");
-        load(new Intent(activity, LoginActivity.class));
+        Log.d(TAG, "Logging in with intent to " + intent);
+        Intent loginIntent = new Intent(activity, LoginActivity.class);
+        if(intent != null)
+        {
+            loginIntent.putExtra("chatroom", intent);
+        }
+        load(loginIntent);
     }
 
     @Override
-    public void startChat()
+    public void startChat(String intent)
     {
-        Log.e(TAG, "Is logged In");
-        load(new Intent(activity, ChatroomActivity.class));
+        Log.d(TAG, "Is logged in with intent to " + intent);
+        Intent chatIntent = new Intent(activity, ChatroomActivity.class);
+        if(intent != null)
+        {
+            chatIntent.putExtra("chatroom", intent);
+        }
+        load(chatIntent);
     }
 
     private void startNewActivity(Intent intent)

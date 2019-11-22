@@ -33,20 +33,28 @@ public class LoginRouter implements LoginContract.Router
     }
 
     @Override
-    public void startLogin()
+    public void startLogin(String chatroom)
     {
         Log.e(TAG, "Start Login");
 
         Intent returnToLogin = new Intent(activity, LoginActivity.class);
+        if(chatroom != null)
+        {
+            returnToLogin.putExtra("chatroom", chatroom);
+        }
         activity.startActivity(returnToLogin);
     }
 
     @Override
-    public void startChatroom()
+    public void startChatroom(String chatroom)
     {
         Log.e(TAG, "Start Chatroom");
 
         Intent chatRoomIntent = new Intent(activity, ChatroomActivity.class);
+        if(chatroom != null)
+        {
+            chatRoomIntent.putExtra("chatroom", chatroom);
+        }
         activity.startActivity(chatRoomIntent);
     }
 

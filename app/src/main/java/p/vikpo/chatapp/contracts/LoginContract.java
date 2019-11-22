@@ -35,8 +35,8 @@ public interface LoginContract
 
     interface Router extends Contract.Router
     {
-        void startLogin();
-        void startChatroom();
+        void startLogin(String chatroom);
+        void startChatroom(String chatroom);
         void signInGoogle(GoogleSignInClient gsc);
     }
 }

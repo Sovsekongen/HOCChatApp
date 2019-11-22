@@ -2,12 +2,15 @@ package p.vikpo.chatapp.presenters.chatroom;
 
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -15,6 +18,7 @@ import p.vikpo.chatapp.contracts.ChatroomContract;
 import p.vikpo.chatapp.entities.MessageImageWrapper;
 import p.vikpo.chatapp.entities.MessageWrapper;
 import p.vikpo.chatapp.interactors.FirebaseChatroomInteractor;
+import p.vikpo.chatapp.interactors.FirebaseMessageInteractor;
 import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
 import p.vikpo.chatapp.interactors.FirebaseUserInteractor;
 import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
@@ -31,6 +35,7 @@ public class ChatroomPresenter
     private Fragment parent;
     private String chatroomName;
     private static final String IMAGE_LOCATION = "images/";
+    private static final String TAG = "ChatApp - ChatroomPresenter";
 
     /**
      * Constructor instansiating the needed resources for maintaining this class.

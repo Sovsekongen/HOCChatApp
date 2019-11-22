@@ -1,7 +1,17 @@
 package p.vikpo.chatapp.interactors;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -13,13 +23,13 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.HashMap;
 
 import p.vikpo.chatapp.R;
-import p.vikpo.chatapp.contracts.NotificationContract;
+import p.vikpo.chatapp.views.activities.MainActivity;
 
-public class FirebaseMessageInteractor extends FirebaseMessagingService implements NotificationContract.Interactor
+public class FirebaseMessageInteractor extends FirebaseMessagingService
 {
-    private NotificationInteractor interactor;
     private FirebaseFirestore mDatabase;
     private FirebaseAuth mAuth;
+    private FirebaseChatroomInteractor chatroomInteractor;
 
     private static final String TAG = "ChatApp - FirebaseMessageInteractor";
     private static final String COLLECTION_USER = "users";
@@ -35,17 +45,11 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService implemen
     {
         mDatabase = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-    }
-
-    public FirebaseMessageInteractor(Activity activity)
-    {
-        interactor = new NotificationInteractor(activity);
-        mDatabase = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
+        chatroomInteractor = new FirebaseChatroomInteractor();
     }
 
     /**
-     * What should happend when a message is received. Not currently doing anything of value.
+     * What should happen when a message is received. Not currently doing anything of value.
      * @param remoteMessage the message received.
      */
     @Override
@@ -56,12 +60,55 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService implemen
         if (remoteMessage.getData().size() > 0)
         {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            showNotification(remoteMessage);
         }
 
         if (remoteMessage.getNotification() != null)
         {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
+    }
+
+    private void showNotification(RemoteMessage message)
+    {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+        String title = message.getData().get("title");
+        String text = message.getData().get("text");
+        String deepLink = message.getData().get("deepLink");
+        String chatroom = message.getData().get("chatroom");
+        chatroomInteractor.updateChatroomNew(translateTitleRev(chatroom));
+
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(deepLink));
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("chatroom", chatroom);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        String NOTIFICATION_CHANNEL_ID = "101";
+
+        @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "Notification", NotificationManager.IMPORTANCE_MAX);
+
+        //Configure Notification Channel
+        notificationChannel.setDescription("Game Notifications");
+        notificationChannel.enableLights(true);
+        notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+        notificationChannel.enableVibration(true);
+
+        notificationManager.createNotificationChannel(notificationChannel);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent,0);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setContentTitle(title)
+                .setAutoCancel(true)
+                .setContentText(text)
+                .setContentIntent(pendingIntent)
+                .setWhen(System.currentTimeMillis())
+                .setPriority(Notification.PRIORITY_MAX);
+
+
+        notificationManager.notify(1, notificationBuilder.build());
     }
 
     /**
@@ -103,17 +150,15 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService implemen
                 if(topics.get(name))
                 {
                     FirebaseMessaging.getInstance().subscribeToTopic(translateTitle(name))
-                            .addOnCompleteListener(task ->
+                        .addOnCompleteListener(task ->
+                        {
+                            if (!task.isSuccessful())
                             {
-                                String msg = getString(R.string.msg_subscribed);
+                                Log.e(TAG, "Failed to subscribe", task.getException());
+                            }
 
-                                if (!task.isSuccessful())
-                                {
-                                    msg = getString(R.string.msg_subscribe_failed);
-                                }
-
-                                Log.d(TAG, msg);
-                            });
+                            Log.d(TAG, "Subscribed successfully to " + translateTitle(name));
+                        });
                 }
             }
         }
@@ -124,19 +169,13 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService implemen
      */
     private void unsubscribeAll()
     {
+        Log.d(TAG, "Unsubscribing on all topics");
         for(String name : CHATROOM_NAMES)
         {
             FirebaseMessaging.getInstance().unsubscribeFromTopic(translateTitle(name))
                     .addOnFailureListener(e ->
                             Log.e(TAG, "Cant unsubscribe from " + name, e));
         }
-    }
-
-    @Override
-    public void unregister()
-    {
-        interactor.unregister();
-        interactor = null;
     }
 
     /**
@@ -156,6 +195,26 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService implemen
                 return "photo";
             case "Series":
                 return "series";
+            default:
+                return document;
+        }
+    }
+
+    /**
+     * ReverseTransfer...
+     */
+    private String translateTitleRev(String document)
+    {
+        switch(document)
+        {
+            case "music":
+                return "Music";
+            case "sparetime":
+                return "Spare Time";
+            case "photo":
+                return "Photography";
+            case "series":
+                return "Series";
             default:
                 return document;
         }

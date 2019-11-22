@@ -50,6 +50,16 @@ public class ChatroomRouter implements ChatroomContract.RouterActivity
 
             fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, chatFragment).commit();
         }
+        else if(launchIntent.getStringExtra("chatroom") != null)
+        {
+            Fragment chatFragment = ChatroomFragment.newInstance();
+            Bundle chatroomBundle = new Bundle();
+
+            chatroomBundle.putString("chatroomName", launchIntent.getStringExtra("chatroom"));
+            chatFragment.setArguments(chatroomBundle);
+
+            fragmentTransaction.replace(R.id.ChatRoomFragmentContainer, chatFragment).commit();
+        }
         else
         {
             fragmentTransaction.add(R.id.ChatRoomFragmentContainer, ChatroomListFragment.newInstance()).commit();

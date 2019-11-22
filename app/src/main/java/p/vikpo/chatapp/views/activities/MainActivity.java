@@ -1,5 +1,6 @@
 package p.vikpo.chatapp.views.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.transition.Fade;
 import android.util.Log;
@@ -34,7 +35,16 @@ public class MainActivity extends AppCompatActivity
 
         initBackend();
 
-        presenter.isLoggedIn();
+        Intent notificationIntent = getIntent();
+
+        if(notificationIntent != null)
+        {
+            presenter.isLoggedIn(notificationIntent);
+        }
+        else
+        {
+            presenter.isLoggedIn(null);
+        }
     }
 
     @Override

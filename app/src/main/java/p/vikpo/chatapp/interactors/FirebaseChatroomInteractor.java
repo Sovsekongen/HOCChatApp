@@ -55,19 +55,6 @@ public class FirebaseChatroomInteractor
     }
 
     /**
-     * Constructor for initializing the class for a given document. Used for handling specific chatroom
-     * messages.
-     * @param document the MessageDocument for which the class is initialized.
-     */
-    public FirebaseChatroomInteractor(String document)
-    {
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseFirestore.getInstance();
-        mUser = mAuth.getCurrentUser();
-        this.document = document;
-    }
-
-    /**
      * Adds a message to the given document.
      * @param message the message to be added to the database.
      */
@@ -83,6 +70,14 @@ public class FirebaseChatroomInteractor
      * each individual user - looking into adding a user specific DB-entry.
      */
     private void updateChatroomNew()
+    {
+        DocumentReference docReference = mDatabase.collection(COLLECTION_CHATROOM)
+                .document(translateTitle(document));
+
+        docReference.update(DOCUMENT_FIELD_LAST, System.currentTimeMillis());
+    }
+
+    public void updateChatroomNew(String document)
     {
         DocumentReference docReference = mDatabase.collection(COLLECTION_CHATROOM)
                 .document(translateTitle(document));

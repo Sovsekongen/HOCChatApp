@@ -31,6 +31,8 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
     private FacebookInteractor facebookInteractor;
     private LoginContract.View view;
 
+    private String chatroom;
+
     /**
      * Instantiating the presenter based on the View interface and the parent activity
      * @param activity parent activity
@@ -53,6 +55,8 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
 
         this.mGoogleSignInClient = GoogleSignIn.getClient(activity, gso);
         this.view = view;
+
+        chatroom = activity.getIntent().getStringExtra("chatroom");
     }
 
     /**
@@ -118,7 +122,7 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
     public void onLoginSuccess()
     {
         view.hideProgressBar();
-        loginRouter.startChatroom();
+        loginRouter.startChatroom(chatroom);
     }
 
     /**
@@ -130,7 +134,7 @@ public class LoginPresenter implements LoginContract.Presentor, LoginContract.In
     public void onLoginError(String error)
     {
         view.hideProgressBar();
-        loginRouter.startLogin();
+        loginRouter.startLogin(chatroom);
         Log.e(TAG, error);
         Toast.makeText(activity, "Unable to sign in. Please try again later.", Toast.LENGTH_SHORT).show();
     }
