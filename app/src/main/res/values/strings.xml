@@ -5,4 +5,24 @@
 
     <string name="splash_layout_content">WelcomeImage</string>
     <string name="splash_layout_welcome">Welcome!</string>
+
+    <string name="channel_name">ChatApp Channel</string>
+    <string name="channel_description">Channel for handling push notifications</string>
+
+    <string name="dialog_title">Image source</string>
+    <string name="dialog_ok_button">Ok</string>
+    <string name="dialog_cancel_button">Cancel</string>
+
+    <string name="default_notification_channel_id">ChatAppNotificationId</string>
+
+    <string name="permission_dialog_title">Notifications</string>
+    <string name="permission_dialog_text">Do you want to receive notifications for this chatroom?</string>
+    <string name="permission_dialog_ok_button">Yes</string>
+    <string name="permission_dialog_cancel_button">No</string>
+
+    <string name="msg_subscribed">You have subscribed to a new topic</string>
+    <string name="msg_subscribe_failed">You failed to subscribe to a new topic</string>
+
+    <string name="intent_filter_deep_link_http">deepLinkIntent</string>
+    <string name="intent_filter_deep_link_example">deepLinkExample</string>
 </resources>
