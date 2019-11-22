@@ -13,11 +13,9 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 
 import p.vikpo.chatapp.contracts.LoginContract;
-import p.vikpo.chatapp.routers.LoginRouter;
 
 public class FacebookInteractor implements LoginContract.Interactor
 {
-    private LoginRouter loginRouter;
     private LoginContract.InteractorOutput output;
 
     private FirebaseAuth mAuth;
@@ -26,7 +24,6 @@ public class FacebookInteractor implements LoginContract.Interactor
 
     public FacebookInteractor(Activity activity, LoginContract.InteractorOutput output)
     {
-        loginRouter = new LoginRouter(activity);
         mAuth = FirebaseAuth.getInstance();
         this.activity = activity;
         this.output = output;
@@ -36,7 +33,6 @@ public class FacebookInteractor implements LoginContract.Interactor
     public void unregister()
     {
         activity = null;
-        loginRouter = null;
     }
 
     /**
@@ -55,11 +51,7 @@ public class FacebookInteractor implements LoginContract.Interactor
                 Log.e(TAG, "Task is Successful");
                 output.onLoginSuccess();
             }
-            else
-            {
-                output.onLoginError(task.getException().toString());
-            }
-        });
+        }).addOnFailureListener(e -> output.onLoginError(e.toString()));
     }
 
     /**

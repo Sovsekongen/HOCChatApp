@@ -10,7 +10,7 @@ public class ChatroomListViewHolder extends RecyclerView.ViewHolder
 {
     private ChatroomListLayout chatroomListLayout;
 
-    public ChatroomListViewHolder(@NonNull ChatroomListLayout chatroomListLayout)
+    ChatroomListViewHolder(@NonNull ChatroomListLayout chatroomListLayout)
     {
         super(chatroomListLayout);
         this.chatroomListLayout = chatroomListLayout;
@@ -21,7 +21,7 @@ public class ChatroomListViewHolder extends RecyclerView.ViewHolder
      * @param title the title of the chatroom
      * @param listener the onClickListener for determening what happends when the chatroom is clicked.
      */
-    public void bind(String title, String description, final ChatroomListAdapter.OnItemClickListener listener)
+    void bind(String title, String description, final ChatroomListAdapter.OnItemClickListener listener)
     {
         chatroomListLayout.setParams(title, description);
         chatroomListLayout.setOnClickListener(v -> listener.onItemClick(chatroomListLayout));

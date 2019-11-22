@@ -6,13 +6,10 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-
-import p.vikpo.chatapp.interactors.viewmodel.AvatarViewModel;
 
 public class FirebaseStorageInteractor
 {

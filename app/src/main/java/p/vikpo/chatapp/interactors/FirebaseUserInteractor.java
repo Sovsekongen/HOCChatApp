@@ -1,6 +1,5 @@
 package p.vikpo.chatapp.interactors;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -37,7 +36,6 @@ public class FirebaseUserInteractor implements MainContract.Interactor
     private static final String COLLECTION_USER = "users";
     private static final String DOCUMENT_FIELD_USERID = "mUid";
     private static final String DOCUMENT_FIELD_HAS_PERMISSION = "mHasPermission";
-    private static final String DOCUMENT_FIELD_TOKEN = "mMessageToken";
     private static final String IMAGE_PATH_USER = "user/";
 
     /**

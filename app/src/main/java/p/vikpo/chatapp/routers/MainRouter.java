@@ -27,26 +27,34 @@ public class MainRouter implements MainContract.Router
         activity = null;
     }
 
+    /**
+     * Starts the login activity - checks to see if the main fragment has been launched by an intent.
+     * @param chatroomName the name of the chatroom that the intent has been launched with.
+     */
     @Override
-    public void startLogin(String intent)
+    public void startLogin(String chatroomName)
     {
-        Log.d(TAG, "Logging in with intent to " + intent);
+        Log.d(TAG, "Logging in with intent to " + chatroomName);
         Intent loginIntent = new Intent(activity, LoginActivity.class);
-        if(intent != null)
+        if(chatroomName != null)
         {
-            loginIntent.putExtra("chatroom", intent);
+            loginIntent.putExtra("chatroom", chatroomName);
         }
         load(loginIntent);
     }
 
+    /**
+     * Starts the chat activity - checks to see if the main fragment has been launched by an intent
+     * @param chatroomName the name of the chatroom that the intent has been launched with.
+     */
     @Override
-    public void startChat(String intent)
+    public void startChat(String chatroomName)
     {
-        Log.d(TAG, "Is logged in with intent to " + intent);
+        Log.d(TAG, "Is logged in with intent to " + chatroomName);
         Intent chatIntent = new Intent(activity, ChatroomActivity.class);
-        if(intent != null)
+        if(chatroomName != null)
         {
-            chatIntent.putExtra("chatroom", intent);
+            chatIntent.putExtra("chatroom", chatroomName);
         }
         load(chatIntent);
     }

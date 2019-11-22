@@ -29,7 +29,7 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap>
     private AsyncResponse delegate;
 
 
-    public ImageDownloader(AsyncResponse delegate)
+    ImageDownloader(AsyncResponse delegate)
     {
         this.delegate = delegate;
     }

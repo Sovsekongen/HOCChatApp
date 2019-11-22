@@ -52,11 +52,6 @@ public class ChatroomListLayout extends ConstraintLayout
         return title;
     }
 
-    public TextView getDescription()
-    {
-        return description;
-    }
-
     public void setParams(String title, String description)
     {
         this.title.setText(title);
