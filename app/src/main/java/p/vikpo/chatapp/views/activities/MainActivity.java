@@ -3,7 +3,6 @@ package p.vikpo.chatapp.views.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.transition.Fade;
-import android.util.Log;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,8 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.login.LoginManager;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessagingService;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.presenters.MainPresenter;

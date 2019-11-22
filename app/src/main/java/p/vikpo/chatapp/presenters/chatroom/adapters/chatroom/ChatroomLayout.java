@@ -17,9 +17,6 @@ public class ChatroomLayout extends ConstraintLayout
 {
     private TextView name, date, message;
     private ImageView avatar, messageImage;
-    private final int MESSAGE_OUT_VIEW_TYPE = 2;
-    private final int MESSAGE_IN_IMAGE = 3;
-    private  final int MESSAGE_OUT_IMAGE = 4;
     private static final String TAG = "ChatApp - ChatroomLayout";
 
     /**
@@ -33,15 +30,15 @@ public class ChatroomLayout extends ConstraintLayout
 
         switch(viewType)
         {
-            case MESSAGE_IN_IMAGE:
+            case 3:
                 inflate(context, R.layout.chatroom_message_image, this);
                 initUIImage();
                 break;
-            case MESSAGE_OUT_IMAGE:
+            case 4:
                 inflate(context, R.layout.chatroom_message_image_mirror, this);
                 initUIImage();
                 break;
-            case MESSAGE_OUT_VIEW_TYPE:
+            case 2:
                 inflate(context, R.layout.chatroom_message_item_mirror, this);
                 initUIMessage();
                 break;

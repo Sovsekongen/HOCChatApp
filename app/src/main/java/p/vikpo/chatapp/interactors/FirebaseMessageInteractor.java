@@ -1,16 +1,15 @@
 package p.vikpo.chatapp.interactors;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -77,7 +76,11 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService
         String text = message.getData().get("text");
         String deepLink = message.getData().get("deepLink");
         String chatroom = message.getData().get("chatroom");
-        chatroomInteractor.updateChatroomNew(translateTitleRev(chatroom));
+
+        if(chatroom != null)
+        {
+            chatroomInteractor.updateChatroomNew(translateTitleRev(chatroom));
+        }
 
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(deepLink));
@@ -105,7 +108,7 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService
                 .setContentText(text)
                 .setContentIntent(pendingIntent)
                 .setWhen(System.currentTimeMillis())
-                .setPriority(Notification.PRIORITY_MAX);
+                .setPriority(1);
 
 
         notificationManager.notify(1, notificationBuilder.build());
@@ -116,7 +119,7 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService
      * @param token the new token.
      */
     @Override
-    public void onNewToken(String token)
+    public void onNewToken(@NonNull String token)
     {
         Log.d(TAG, "Refreshed Token: " + token);
 
@@ -147,7 +150,7 @@ public class FirebaseMessageInteractor extends FirebaseMessagingService
         {
             if(topics.containsKey(name))
             {
-                if(topics.get(name))
+                if(topics.get(name) != null)
                 {
                     FirebaseMessaging.getInstance().subscribeToTopic(translateTitle(name))
                         .addOnCompleteListener(task ->

@@ -17,15 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import p.vikpo.chatapp.R;
 import p.vikpo.chatapp.contracts.ChatroomContract;
+import p.vikpo.chatapp.entities.MessageImageWrapper;
 import p.vikpo.chatapp.presenters.chatroom.ChatroomPresenter;
 import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomAdapter;
 import p.vikpo.chatapp.presenters.chatroom.adapters.chatroom.ChatroomViewHolder;
-import p.vikpo.chatapp.entities.MessageImageWrapper;
 
 /**
  * Fragment for containing each individual fragment - currently only supports a single chatroom.

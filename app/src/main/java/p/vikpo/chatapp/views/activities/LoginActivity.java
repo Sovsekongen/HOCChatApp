@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.transition.Fade;
 import android.util.Log;
 import android.view.Window;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;

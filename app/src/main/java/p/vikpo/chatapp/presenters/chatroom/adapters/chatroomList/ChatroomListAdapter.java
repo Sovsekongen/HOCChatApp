@@ -31,7 +31,7 @@ public class ChatroomListAdapter extends FirestoreRecyclerAdapter<ChatroomWrappe
 
     /**
      *
-     * @param query
+     * @param query the query that the Adapter should be initialized with.
      * @param listener the OnClickListener for the adapter
      */
     public ChatroomListAdapter(Query query, OnItemClickListener listener)
@@ -66,7 +66,7 @@ public class ChatroomListAdapter extends FirestoreRecyclerAdapter<ChatroomWrappe
      * When the ViewHolder is bound fill the ChatroomListViewHolder-class with information for displaying.
      * @param holder the ViewHolder whos responsibility it is to show the information
      * @param position the position in the list
-     * @param model
+     * @param model the model that the adapter gets the data from.
      */
     @Override
     protected void onBindViewHolder(@NonNull ChatroomListViewHolder holder, int position, @NonNull ChatroomWrapper model)
@@ -90,7 +90,7 @@ public class ChatroomListAdapter extends FirestoreRecyclerAdapter<ChatroomWrappe
      * @param e the FirebaseFirestoreException to be printed.
      */
     @Override
-    public void onError(FirebaseFirestoreException e)
+    public void onError(@NonNull FirebaseFirestoreException e)
     {
         Log.e(TAG, "Encountered Error", e);
     }

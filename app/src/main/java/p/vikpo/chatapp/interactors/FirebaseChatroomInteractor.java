@@ -29,7 +29,6 @@ public class FirebaseChatroomInteractor
     private static final String COLLECTION_CHATROOM = "chatrooms";
     private static final String DOCUMENT_SUFFIX = "Messages";
     private static final String DOCUMENT_FIELD_LAST = "lastMessage";
-    private static final String DOCUMENT_FIELD_NEW = "newMessage";
     private static final String DOCUMENT_FIELD_TIMER = "messageTimer";
     private static final String TAG = "ChatApp - Firebase Connection";
     private static final int PAGE_LIMIT = 50;
@@ -77,7 +76,7 @@ public class FirebaseChatroomInteractor
         docReference.update(DOCUMENT_FIELD_LAST, System.currentTimeMillis());
     }
 
-    public void updateChatroomNew(String document)
+    void updateChatroomNew(String document)
     {
         DocumentReference docReference = mDatabase.collection(COLLECTION_CHATROOM)
                 .document(translateTitle(document));

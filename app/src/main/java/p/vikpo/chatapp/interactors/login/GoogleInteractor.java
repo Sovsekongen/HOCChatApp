@@ -49,11 +49,7 @@ public class GoogleInteractor implements LoginContract.Interactor
                 Log.e(TAG, "Login Success being called");
                 output.onLoginSuccess();
             }
-            else
-            {
-                output.onLoginError(task.getException().toString());
-            }
-        });
+        }).addOnFailureListener(e -> output.onLoginError(e.toString()));
     }
 
     /**

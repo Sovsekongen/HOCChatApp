@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 
 import p.vikpo.chatapp.contracts.CameraContract;
-import p.vikpo.chatapp.interactors.FirebaseStorageInteractor;
 import p.vikpo.chatapp.routers.CameraRouter;
 
 public class CameraPresenter implements CameraContract.Presenter
@@ -71,7 +70,10 @@ public class CameraPresenter implements CameraContract.Presenter
         if (requestCode == REQUEST_IMAGE_CAPTURE)
         {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            router.setResultBitmap(photo);
+            if(photo != null)
+            {
+                router.setResultBitmap(photo);
+            }
         }
     }
 
